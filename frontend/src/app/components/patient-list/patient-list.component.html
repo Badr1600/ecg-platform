@@ -1,0 +1,65 @@
+<div class="list row">
+    <div class="col-md-8">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search by title" [(ngModel)]="title" />
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h4>Patients List</h4>
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let patient of patients; let i = index"
+                [class.active]="i == currentIndex" (click)="setActivePatient(patient, i)">
+                {{ patient.title }}
+            </li>
+        </ul>
+
+        <button class="m-3 btn btn-sm btn-danger" (click)="removeAllPatients()">
+            Remove All
+        </button>
+    </div>
+    <div class="col-md-6">
+        <div *ngIf="currentPatient">
+            <h4>Patient:</h4>
+            <div>
+                <label><strong>Title:</strong></label> {{ currentPatient.title }}
+            </div>
+            <div>
+                <label><strong>Age:</strong></label>
+                {{ currentPatient.age }}
+            </div>
+            <div>
+                <label><strong>Gender:</strong></label>
+                {{ currentPatient.gender }}
+            </div>
+            <div>
+                <label *ngIf="currentDoctor"><strong>Doctor:</strong></label> {{ currentDoctor }}
+            </div>
+            <div>
+                <label *ngIf="currentHospital"><strong>Hospital:</strong></label> {{ currentHospital }}
+            </div>
+
+            <a class="badge badge-warning mr-2" routerLink="/patients/{{ currentPatient.id }}">
+                Edit
+            </a>
+            <a class="badge badge-success mr-2" routerLink="/patientsView/{{ currentPatient.id }}">
+                View
+            </a>
+            <a *ngIf="!currentDoctor" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
+                Add Doctor
+            </a>
+            <a *ngIf="currentDoctor" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
+                Change Doctor
+            </a>
+        </div>
+
+        <div *ngIf="!currentPatient">
+            <br />
+            <p>Please click on a patient...</p>
+        </div>
+    </div>
+</div>

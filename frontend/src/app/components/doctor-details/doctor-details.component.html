@@ -1,0 +1,40 @@
+<div style="width: 400px; margin: auto;">
+    <div *ngIf="currentDoctor" class="edit-form">
+        <h4>Doctor</h4>
+        <form>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" [(ngModel)]="currentDoctor.title" name="title" />
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" id="description" [(ngModel)]="currentDoctor.description"
+                    name="description" />
+            </div>
+
+            <div class="form-group">
+                <label for="title"><strong>Hospitals:</strong></label> {{ currentHospital }}
+                <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
+                        [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
+                        {{ hospital.title }}
+                    </li>
+                </ul>
+            </div>
+        </form>
+
+        <button class="badge badge-danger mr-2" (click)="deleteDoctor()">
+            Delete
+        </button>
+
+        <button type="submit" class="badge badge-success" (click)="updateDoctor()">
+            Update
+        </button>
+        <p>{{ message }}</p>
+    </div>
+
+    <div *ngIf="!currentDoctor">
+        <br />
+        <p>Cannot access this Doctor...</p>
+    </div>
+</div>

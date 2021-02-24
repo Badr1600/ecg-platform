@@ -1,0 +1,53 @@
+<div class="list row">
+    <div class="col-md-8">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search by title" [(ngModel)]="name" />
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
+                    Search
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h4>Doctors List</h4>
+        <ul class="list-group">
+            <li class="list-group-item" *ngFor="let doctor of doctors; let i = index"
+                [class.active]="i == currentIndex" (click)="setActiveDoctor(doctor, i)">
+                {{ doctor.title }}
+            </li>
+        </ul>
+
+        <button class="m-3 btn btn-sm btn-danger" (click)="removeAllDoctors()">
+            Remove All
+        </button>
+    </div>
+    <div class="col-md-6">
+        <div *ngIf="currentDoctor">
+            <h4>Doctor:</h4>
+            <div>
+                <label><strong>Title:</strong></label> {{ currentDoctor.title }}
+            </div>
+            <div>
+                <label><strong>Description:</strong></label>
+                {{ currentDoctor.description }}
+            </div>
+            <div>
+                <label><strong>Hospital:</strong></label> {{ currentHospital }}
+            </div>
+
+            <a class="badge badge-warning mr-2" routerLink="/doctors/{{ currentDoctor.id }}">
+                Edit
+            </a>
+
+            <a class="badge badge-success mr-2" routerLink="/doctorsView/{{ currentDoctor.id }}">
+                View
+            </a>
+        </div>
+
+        <div *ngIf="!currentDoctor">
+            <br />
+            <p>Please click on a doctor...</p>
+        </div>
+    </div>
+</div>

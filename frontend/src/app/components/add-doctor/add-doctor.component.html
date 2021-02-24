@@ -1,0 +1,26 @@
+<div style="width: 400px; margin: auto;">
+  <div class="submit-form">
+    <div *ngIf="!submitted">
+      <div class="form-group">
+        <label for="title">Name</label>
+        <input type="text" class="form-control" id="title" required [(ngModel)]="doctor.title" name="title" />
+      </div>
+
+      <div class="form-group">
+        <label for="hospital">Hospital</label>
+        <select class="form-control" required [(ngModel)]="currentHospital">
+          <option *ngFor="let hospital of hospitals" [ngValue]="hospital">
+            {{ hospital.title }}
+          </option>
+      </select>
+      </div>
+
+      <button (click)="saveDoctor()" class="btn btn-success">Submit</button>
+    </div>
+
+    <div *ngIf="submitted">
+      <h4>You submitted successfully!</h4>
+      <button class="btn btn-success" (click)="newDoctor()">Add</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div style="width: 400px; margin: auto;">
+    <div *ngIf="currentHospital" class="edit-form">
+        <h4>Hospital</h4>
+        <form>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" [(ngModel)]="currentHospital.title" name="title" />
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" class="form-control" id="location" [(ngModel)]="currentHospital.location"
+                    name="location" />
+            </div>
+        </form>
+
+        <button class="badge badge-danger mr-2" (click)="deleteHospital()">
+            Delete
+        </button>
+
+        <button type="submit" class="badge badge-success" (click)="updateHospital()">
+            Update
+        </button>
+        <p>{{ message }}</p>
+    </div>
+
+    <div *ngIf="!currentHospital">
+        <br />
+        <p>Cannot access this Hospital...</p>
+    </div>
+</div>

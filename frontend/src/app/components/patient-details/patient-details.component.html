@@ -1,0 +1,76 @@
+<div style="width: 400px; margin: auto;">
+    <div *ngIf="currentPatient" class="edit-form">
+        <h4>Patient</h4>
+        <form>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" class="form-control" id="title" [(ngModel)]="currentPatient.title" name="title" />
+            </div>
+            <div class="form-group">
+                <label for="description">Age</label>
+                <input type="text" class="form-control" id="description" [(ngModel)]="currentPatient.age"
+                    name="description" />
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender" required [(ngModel)]="currentPatient.gender" name="gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title"><strong>Doctors:</strong></label> {{ currentDoctor?.title }}
+                <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let doctor of doctors; let i = index"
+                        [class.active]="i == currentIndexDoctor" (click)="setActiveDoctor(doctor, i)">
+                        {{ doctor.title }}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="title"><strong>Hospitals:</strong></label> {{ currentHospital?.title }}
+                <ul class="list-group">
+                    <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
+                        [class.active]="i == currentIndexHospital" (click)="setActiveHospital(hospital, i)">
+                        {{ hospital.title }}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="title"><strong>Medical Records:</strong></label>
+                <ul class="list-group">
+                    <li class="list-group-item" required *ngFor="let medical of medicals; let i = index"
+                        [class.active]="i == currentIndexMedical" (click)="setActiveMedical(medical, i)">
+                        {{ medical.title }}
+                    </li>
+                </ul>
+            </div>
+        </form>
+
+        <button class="badge badge-danger mr-2" (click)="deletePatient()">
+            Delete
+        </button>
+
+        <button type="submit" class="badge badge-success mr-2" (click)="updatePatient()">
+            Update
+        </button>
+
+        <button type="submit" class="badge badge-success mr-2" routerLink="/addMedical/{{ currentPatient.id}}">
+            Add Medical Record
+        </button>
+
+        <button *ngIf="selected" type="submit" class="badge badge-success mr-2" routerLink="/medicals/{{ currentMedical.id }}">
+            Edit Medical Record
+        </button>
+        <p>{{ message }}</p>
+    </div>
+
+    <div *ngIf="!currentPatient">
+        <br />
+        <p>Cannot access this Patient...</p>
+    </div>
+</div>
