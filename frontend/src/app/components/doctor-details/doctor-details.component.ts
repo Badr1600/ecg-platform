@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
+import { PatientsService } from 'src/app/_services/patients.service';
+
 
 @Component({
   selector: 'app-doctor-details',
@@ -12,6 +14,7 @@ export class DoctorDetailsComponent implements OnInit {
   currentHospital = null;
   currentDoctor = null;
   newHospital = null;
+  oldHospital = null;
   message = '';
   doctors: any;
   hospitals: any;
@@ -20,6 +23,7 @@ export class DoctorDetailsComponent implements OnInit {
 
   constructor(
     private doctorService: DoctorsService,
+    private patientService: PatientsService,
     private hospitalService: HospitalsService,
     private route: ActivatedRoute,
     private router: Router) { }
@@ -45,7 +49,7 @@ export class DoctorDetailsComponent implements OnInit {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          this.currentHospital = data.title;
+          this.currentHospital = data;
         },
         error => {
           console.log(error);
@@ -77,21 +81,78 @@ export class DoctorDetailsComponent implements OnInit {
   }
 
   updateDoctor(): void {
+    this.oldHospital = this.currentHospital;
     if (this.newHospital != null) {
       this.currentDoctor.hospital = [];
       this.currentDoctor.hospital.push(this.newHospital.id);
-      this.currentHospital = this.newHospital.title;
+      this.currentHospital = this.newHospital;
     }
 
     this.doctorService.update(this.currentDoctor.id, this.currentDoctor)
       .subscribe(
         response => {
-          console.log(response);
           this.message = 'The doctor was updated successfully!';
+
+          const setHospital = {
+            hospital: this.newHospital
+          }
+
+          this.doctorService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
+          });
+
+          if (this.currentDoctor.patient.length != 0) {
+            this.patientService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
+            });  
+          }
+          
+          const addDoctor = {
+            doctor: this.currentDoctor.id,
+            addDoctor: true,
+            deleteDoctor: false
+          }
+
+          this.hospitalService.updateArrayDoctor(this.newHospital.id, addDoctor).subscribe(response => {
+          });
+
+          const removeDoctor = {
+            doctor: this.currentDoctor.id,
+            deleteDoctor: true,
+            addDoctor: false
+          }
+
+          this.hospitalService.updateArrayDoctor(this.oldHospital.id, removeDoctor).subscribe(response => {
+          });
+
+          const addPatients = {
+            patient: this.currentDoctor.patient,
+            addPatient: true,
+            deletePatient: false
+          }
+
+          this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
+          });
+
+          const removePatients = {
+            patient: this.currentDoctor.patient,
+            deletePatient: true,
+            addPatient: false
+          }
+
+          this.hospitalService.updateArrayPatient(this.oldHospital.id, removePatients).subscribe(response => {
+          });
+
+          //this.refresh();
         },
         error => {
           console.log(error);
         });
+  }
+
+  refresh(): void {
+    this.router.navigate(['/doctors'])
+      .then(() => {
+        window.location.reload();
+      });
   }
 
   deleteDoctor(): void {
@@ -106,22 +167,3 @@ export class DoctorDetailsComponent implements OnInit {
         });
   }
 }
-
-
-/*updatePublished(status): void {
-  const data = {
-    title: this.currentDoctor.title,
-    description: this.currentDoctor.description,
-    published: status
-  };
-
-  this.doctorService.update(this.currentDoctor.id, data)
-    .subscribe(
-      response => {
-        this.currentDoctor.published = status;
-        console.log(response);
-      },
-      error => {
-        console.log(error);
-      });
-}*/

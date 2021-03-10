@@ -16,8 +16,8 @@ import { BoardModeratorComponent } from './board-moderator/board-moderator.compo
 import { BoardUserComponent } from './board-user/board-user.component';
 import { AddPatientComponent } from './components/add-patient/add-patient.component';
 import { AddDoctorComponent } from './components/add-doctor/add-doctor.component';
-import { PatientDetailsComponent } from './components/patient-details/patient-details.component';
 import { PatientListComponent } from './components/patient-list/patient-list.component';
+import { PatientDetailsComponent } from './components/patient-details/patient-details.component';
 import { DoctorDetailsComponent } from './components/doctor-details/doctor-details.component';
 import { DoctorListComponent } from './components/doctor-list/doctor-list.component';
 import { HospitalDetailsComponent } from './components/hospital-details/hospital-details.component';
@@ -30,6 +30,8 @@ import { AddMedicalComponent } from './components/add-medical/add-medical.compon
 import { MedicalDetailsComponent } from './components/medical-details/medical-details.component';
 import { MedicalViewComponent } from './components/medical-view/medical-view.component';
 import { authInterceptorProviders } from './_helpers/auth.interceptor';
+import { HighchartsChartModule } from 'highcharts-angular';
+
 
 @NgModule({
   declarations: [
@@ -62,7 +64,8 @@ import { authInterceptorProviders } from './_helpers/auth.interceptor';
     CommonModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    HighchartsChartModule
   ],
   providers: [authInterceptorProviders],
   bootstrap: [AppComponent]

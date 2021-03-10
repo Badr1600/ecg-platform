@@ -18,7 +18,9 @@ export class PatientDetailsComponent implements OnInit {
   currentHospital = null;
   selected = false;
   newDoctor = null;
+  oldDoctor = null;
   newHospital = null;
+  oldHospital = null;
   message = '';
   hospitals: any;
   patients: any;
@@ -116,15 +118,9 @@ export class PatientDetailsComponent implements OnInit {
 
   setActiveDoctor(doctor, index): void {
     this.currentIndexDoctor = index;
-    this.patientService.update(this.currentPatient.id, this.currentPatient)
-      .subscribe(
-        data => {
-          this.newDoctor = doctor;
-          this.retrieveHospitals();
-        },
-        error => {
-          console.log(error);
-        });
+    this.newDoctor = doctor;
+    this.retrieveHospitals();
+    this.oldDoctor = this.currentDoctor;
   }
 
   getHospital(id): void {
@@ -163,17 +159,13 @@ export class PatientDetailsComponent implements OnInit {
   }
 
   updatePatient(): void {
+    this.oldHospital = this.currentHospital;
     if (this.newDoctor != null) {
       this.currentPatient.doctor = [];
       this.currentPatient.doctor.push(this.newDoctor.id);
       this.currentDoctor = this.newDoctor;
-    }
-
-    if (this.newHospital != null) {
-      this.currentPatient.hospital = [];
-      this.currentPatient.hospital.push(this.newHospital.id);
-      this.currentHospital = this.newHospital;
-
+      this.currentHospital = this.hospitals[0];
+      this.currentPatient.hospital = this.currentDoctor.hospital[0];
     }
 
     this.currentIndexDoctor = -1;
@@ -182,10 +174,53 @@ export class PatientDetailsComponent implements OnInit {
       .subscribe(
         response => {
           this.message = 'The patient was updated successfully!';
+
+          const patientRemove = {
+            patient: this.currentPatient.id,
+            deletePatient: true
+          }
+
+          this.doctorService.updateArray(this.oldDoctor.id, patientRemove).subscribe(response => {
+          });
+
+          const patientAdd = {
+            patient: this.currentPatient.id,
+            addPatient: true
+          }
+
+          this.doctorService.updateArray(this.newDoctor.id, patientAdd).subscribe(content => {
+          });
+
+          const hospitalRemove = {
+            patient: this.currentPatient.id,
+            deletePatient: true
+          }
+
+          this.hospitalService.updateArrayPatient(this.oldHospital.id, hospitalRemove).subscribe(content => {
+          });
+
+
+          const hospitalAdd = {
+            patient: this.currentPatient.id,
+            addPatient: true
+          }
+
+          this.hospitalService.updateArrayPatient(this.hospitals[0].id, hospitalAdd).subscribe(content => {
+          });
+
+          //this.refresh();
         },
         error => {
           console.log(error);
         });
+
+  }
+
+  refresh(): void {
+    this.router.navigate(['/patients'])
+      .then(() => {
+        window.location.reload();
+      });
   }
 
   deletePatient(): void {
@@ -193,6 +228,26 @@ export class PatientDetailsComponent implements OnInit {
       .subscribe(
         response => {
           console.log(response);
+
+          if (this.currentDoctor.id == this.currentPatient.doctor) {
+            const patientRemove = {
+              patient: this.currentPatient.id,
+              delete: true
+            }
+
+            this.doctorService.updateArray(this.currentDoctor.id, patientRemove).subscribe(response => {
+            });
+          }
+
+          if (this.currentPatient.hospital) {
+            const hospitalRemove = {
+              patient: this.currentPatient.id,
+              delete: true
+            }
+
+            this.hospitalService.updateArrayPatient(this.currentPatient.hospital, hospitalRemove).subscribe(content => {
+            });
+          }
           this.router.navigate(['/patients']);
         },
         error => {

@@ -34,11 +34,9 @@ export class DoctorViewComponent implements OnInit {
     this.doctorService.get(id)
       .subscribe(
         data => {
-          console.log(data);
           this.hospitalService.getAll()
           .subscribe(
             results => {
-              console.log(results);
               results.forEach(element => {
                 if (element.id == data.hospital) {
                   temp.push(element);
@@ -84,7 +82,6 @@ export class DoctorViewComponent implements OnInit {
       .subscribe(
         data => {
           this.doctors = data;
-          console.log(data);
         },
         error => {
           console.log(error);

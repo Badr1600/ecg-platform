@@ -31,7 +31,7 @@ export class PatientListComponent implements OnInit {
     this.doctorService.get(id)
       .subscribe(
         data => {
-          this.currentDoctor = data.title;
+          this.currentDoctor = data;
         },
         error => {
           console.log(error);
@@ -42,7 +42,7 @@ export class PatientListComponent implements OnInit {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          this.currentHospital = data.title;
+          this.currentHospital = data;
         },
         error => {
           console.log(error);
@@ -69,8 +69,8 @@ export class PatientListComponent implements OnInit {
   setActivePatient(patient, index): void {
     this.currentPatient = patient;
     this.currentIndex = index;
-    if (this.currentPatient.doctor || this.currentPatient.hospital) {
-      this.getDoctor(this.currentPatient.doctor);   
+    if (this.currentPatient.doctor != null && this.currentPatient.hospital != null) {
+      this.getDoctor(this.currentPatient.doctor);
       this.getHospital(this.currentPatient.hospital);
     }
   }

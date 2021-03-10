@@ -21,6 +21,12 @@ module.exports = app => {
   // Update a hospital with id
   router.put("/:id", hospitals.update);
 
+  // Update a patient with id
+  router.put("/updateDoctor/:id", hospitals.updateArrayDoctor);
+
+  // Update a patient with id
+  router.put("/updatePatient/:id", hospitals.updateArrayPatient);
+
   // Delete a hospital with id
   router.delete("/:id", hospitals.delete);
 

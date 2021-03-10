@@ -37,10 +37,10 @@
                 {{ currentPatient.gender }}
             </div>
             <div>
-                <label *ngIf="currentDoctor"><strong>Doctor:</strong></label> {{ currentDoctor }}
+                <label *ngIf="currentDoctor?.title"><strong>Doctor:</strong></label> {{ currentDoctor?.title }}
             </div>
             <div>
-                <label *ngIf="currentHospital"><strong>Hospital:</strong></label> {{ currentHospital }}
+                <label *ngIf="currentHospital?.title"><strong>Hospital:</strong></label> {{ currentHospital?.title }}
             </div>
 
             <a class="badge badge-warning mr-2" routerLink="/patients/{{ currentPatient.id }}">
@@ -49,10 +49,10 @@
             <a class="badge badge-success mr-2" routerLink="/patientsView/{{ currentPatient.id }}">
                 View
             </a>
-            <a *ngIf="!currentDoctor" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
+            <a *ngIf="!currentDoctor?.title" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
                 Add Doctor
             </a>
-            <a *ngIf="currentDoctor" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
+            <a *ngIf="currentDoctor?.title" class="badge badge-success mr-2" routerLink="/patients/{{ currentPatient.id }}">
                 Change Doctor
             </a>
         </div>

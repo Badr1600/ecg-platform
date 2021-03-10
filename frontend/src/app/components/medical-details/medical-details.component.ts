@@ -72,12 +72,21 @@ export class MedicalDetailsComponent implements OnInit {
   }
 
   deleteMedical(): void {
-    console.log(this.currentPatient.id);
     this.medicalService.delete(this.currentMedical.id)
       .subscribe(
         response => {
-          console.log(response);
           this.router.navigate(['/patients/' + this.currentPatient.id]);
+          this.patientService.get(this.currentPatient.id)
+            .subscribe(results => {
+              var temp = this.route.snapshot.paramMap.get('id');
+              const data = {
+                medicals: temp,
+                delete: true
+              }
+              this.patientService.updateArray(this.currentPatient.id, data).subscribe(content => {
+                console.log(content);
+              });
+            });
         },
         error => {
           console.log(error);

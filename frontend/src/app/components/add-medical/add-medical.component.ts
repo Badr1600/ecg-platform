@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MedicalsService } from 'src/app/_services/medicals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
+import { RecordsService } from 'src/app/_services/records.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -25,6 +26,7 @@ export class AddMedicalComponent implements OnInit {
   constructor(
     private medicalService: MedicalsService,
     private patientService: PatientsService,
+    private recordService: RecordsService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -60,7 +62,6 @@ export class AddMedicalComponent implements OnInit {
       .subscribe(
         data => {
           this.currentMedical = data;
-          console.log(this.currentMedical);
         },
         error => {
           console.log(error);
@@ -77,7 +78,20 @@ export class AddMedicalComponent implements OnInit {
     this.medicalService.create(data)
       .subscribe(
         response => {
+          this.patientService.get(this.id)
+            .subscribe(results => {
+              var temp = response.id;
+              const data = {
+                medicals: temp,
+                add: true
+              }
+              this.patientService.updateArray(this.id, data).subscribe(content => {
+                console.log(content);
+              });
+            });
+            
           this.submitted = true;
+          this.refresh();
         },
         error => {
           console.log(error);
@@ -85,9 +99,12 @@ export class AddMedicalComponent implements OnInit {
     this.getMedical(data.title);
   }
 
-  /*setMedical(): void {
-    
-  }*/
+  refresh(): void {
+    this.router.navigate(['/patients/' + this.id])
+      .then(() => {
+        window.location.reload();
+      });
+  }
 
   newMedical(): void {
     this.submitted = false;

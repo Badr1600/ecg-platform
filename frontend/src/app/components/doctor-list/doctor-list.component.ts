@@ -26,7 +26,7 @@ export class DoctorListComponent implements OnInit {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          this.currentHospital = data.title;
+          this.currentHospital = data;
         },
         error => {
           console.log(error);
@@ -38,7 +38,6 @@ export class DoctorListComponent implements OnInit {
       .subscribe(
         data => {
           this.doctors = data;
-          console.log(data);
         },
         error => {
           console.log(error);
@@ -54,14 +53,15 @@ export class DoctorListComponent implements OnInit {
   setActiveDoctor(doctor, index): void {
     this.currentDoctor = doctor;
     this.currentIndex = index;
-    this.getHospital(this.currentDoctor.hospital[0])
+    if (this.currentDoctor.hospital != null) {
+      this.getHospital(this.currentDoctor.hospital[0]);
+    }
   }
 
   removeAllDoctors(): void {
     this.doctorService.deleteAll()
       .subscribe(
         response => {
-          console.log(response);
           this.retrieveDoctors();
         },
         error => {
@@ -74,7 +74,6 @@ export class DoctorListComponent implements OnInit {
       .subscribe(
         data => {
           this.doctors = data;
-          console.log(data);
         },
         error => {
           console.log(error);

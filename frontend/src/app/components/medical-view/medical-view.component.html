@@ -1,7 +1,7 @@
 <div class="list row">
     <div class="col-md-8">
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search by title"/>
+            <input type="text" class="form-control" placeholder="Search by title" />
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
                     Search
@@ -10,10 +10,10 @@
         </div>
 
         <div class="form-group">
-            <label for="name"><strong>Name:</strong></label>  {{ currentMedical?.title }}
+            <label for="name"><strong>Name:</strong></label> {{ currentMedical?.title }}
         </div>
     </div>
-   
+
     <div class="col-md-6">
         <div class="form-group">
             <label for="hospital"><strong>Type:</strong></label> {{ currentMedical?.type }}
@@ -21,7 +21,6 @@
         <div class="form-group">
             <label for="hospital"><strong>Patient:</strong></label> {{ currentPatient?.title }}
         </div>
-        <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListener($event)" accept=".csv" />  
     </div>
 
 </div>

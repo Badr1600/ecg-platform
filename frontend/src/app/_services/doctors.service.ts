@@ -25,6 +25,10 @@ export class DoctorsService {
     return this.http.put(`${baseUrl}/${id}`, data);
   }
 
+  updateArray(id, data): Observable<any> {
+    return this.http.put(`${baseUrl}/update/${id}`, data);
+  }
+
   delete(id): Observable<any> {
     return this.http.delete(`${baseUrl}/${id}`);
   }

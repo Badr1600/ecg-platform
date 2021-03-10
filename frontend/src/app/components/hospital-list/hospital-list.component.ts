@@ -25,7 +25,6 @@ export class HospitalListComponent implements OnInit {
       .subscribe(
         data => {
           this.hospitals = data;
-          console.log(data);
         },
         error => {
           console.log(error);
@@ -60,7 +59,6 @@ export class HospitalListComponent implements OnInit {
       .subscribe(
         data => {
           this.hospitals = data;
-          console.log(data);
         },
         error => {
           console.log(error);

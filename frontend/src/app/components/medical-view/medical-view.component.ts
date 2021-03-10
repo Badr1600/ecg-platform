@@ -2,8 +2,20 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MedicalsService } from 'src/app/_services/medicals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
+import { RecordsService } from 'src/app/_services/records.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { parse } from "papaparse";
+import * as Highcharts from 'highcharts';
+
+declare var require: any;
+let Boost = require('highcharts/modules/boost');
+let noData = require('highcharts/modules/no-data-to-display');
+let More = require('highcharts/highcharts-more');
+
+Boost(Highcharts);
+noData(Highcharts);
+More(Highcharts);
+noData(Highcharts);
 
 const lcjs = require('@arction/lcjs')
 
@@ -29,6 +41,9 @@ export class MedicalViewComponent implements OnInit {
   medicals: any;
   hospitals: any;
   medicalData: any[] = [];
+  patient;
+  temp = [];
+  length = 0;
   currentMedical = null;
   currentHospital = null;
   currentPatient = null;
@@ -39,46 +54,26 @@ export class MedicalViewComponent implements OnInit {
     private medicalService: MedicalsService,
     private hospitalService: HospitalsService,
     private patientService: PatientsService,
+    private recordsService: RecordsService,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getMedical(this.route.snapshot.paramMap.get('id'));
     this.retrieveHospitals(this.route.snapshot.paramMap.get('id'));
+    this.fetchCSV(this.route.snapshot.paramMap.get('id'));
   }
-
-  public records: any[] = [];
-  @ViewChild('csvReader') csvReader: any;
 
   isValidCSVFile(file: any) {
     return file.name.endsWith(".csv");
   }
 
-  uploadListener($event: any): void {
-    const papa = require('papaparse');
-    const chart = lightningChart().ChartXY();
+  createECG(length: any): void {
+    const chart = lightningChart().ChartXY({ containerId: 'container' });
     chart.setTitle('ECG');
 
     const {
       createSampledDataGenerator
     } = require('@arction/xydata')
-
-    // Add line series to visualize the data received
-    const ch1 = chart.addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
-    const ch2 = chart.addLineSeries({ dataPattern: DataPatterns.horizontalProgressive })
-    // Style the series
-    ch1
-      .setStrokeStyle(new SolidLine({
-        thickness: 2,
-        fillStyle: new SolidFill({ color: ColorHEX('#5aafc7') })
-      }))
-      .setMouseInteractions(false)
-
-    ch1
-      .setStrokeStyle(new SolidLine({
-        thickness: 2,
-        fillStyle: new SolidFill({ color: ColorHEX('#499822') })
-      }))
-      .setMouseInteractions(false)
 
     chart.setAutoCursorMode(AutoCursorModes.disabled)
 
@@ -93,63 +88,52 @@ export class MedicalViewComponent implements OnInit {
       .setInterval(0, 2500)
       .setScrollStrategy(AxisScrollStrategies.progressive)
 
-    let text = [];
-    let files = $event.srcElement.files;
+    var channels = [];
 
-    if (this.isValidCSVFile(files[0])) {
+    for (var i = 0; i < length; i++) {
+      channels[i] = chart.addLineSeries({ dataPattern: DataPatterns.horizontalProgressive });
+      channels[i].setStrokeStyle(new SolidLine({
+        thickness: 2,
+        fillStyle: new SolidFill({ color: ColorHEX('#5aafc7') })
+      })).setMouseInteractions(false);
+    }
 
-      var point = [];
-      var point2 = [];
-      var time = 0;
-      let input = $event.target;
-      let reader = new FileReader();
-      papa.parse(files[0], {
-        dynamicTyping: true,
-        complete: function (results) {
-          var temp = [];
-          temp.push(results.data);
-          temp[0].forEach(element => {
-            point.push({ x: time, y: element[0] });
-            point2.push({ x: time, y: element[1] });
-            time++;
-          })
-          console.log(point[0].x);
-
-          createSampledDataGenerator(point, 1, 10)
-            .setSamplingFrequency(1)
-            .setInputData(point)
-            .generate()
-            .setStreamBatchSize(10)
-            .setStreamInterval(10)
-            .setStreamRepeat(false)
-            .toStream()
-            .forEach(element => {
-              ch1.add([
-                { x: element.data.x, y: element.data.y },
-              ])
-            })
-
-            createSampledDataGenerator(point2, 1, 10)
-            .setSamplingFrequency(1)
-            .setInputData(point2)
-            .generate()
-            .setStreamBatchSize(10)
-            .setStreamInterval(10)
-            .setStreamRepeat(false)
-            .toStream()
-            .forEach(element => {
-              ch2.add([
-                { x: element.data.x, y: element.data.y },
-              ])
-            })
-            
+    createSampledDataGenerator(this.temp, 1, 10)
+      .setSamplingFrequency(1)
+      .setInputData(this.temp)
+      .generate()
+      .setStreamBatchSize(10)
+      .setStreamInterval(10)
+      .setStreamRepeat(false)
+      .toStream()
+      .forEach(element => {
+        for (var i = 0; i < channels.length; i++) {
+          channels[i].add([
+            { x: element.timestamp, y: +element.data[i] },
+          ])
         }
       })
+  }
 
-      reader.onerror = function () {
-        console.log('error is occured while reading file!');
-      };
-    }
+  fetchCSV(id): void {
+    this.medicalService.get(id)
+      .subscribe(
+        data => {
+          this.patient = data.patient[0];
+          this.currentMedical = data;
+          this.recordsService.findCSV(this.patient)
+            .subscribe(results => {
+              console.log(results);
+              var length = results[0].length;
+              results.forEach(element => {
+                this.temp.push(element);
+              })
+              this.createECG(length);
+            });
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   retrieveHospitals(id): void {
@@ -157,11 +141,9 @@ export class MedicalViewComponent implements OnInit {
     this.medicalService.get(id)
       .subscribe(
         data => {
-          console.log(data);
           this.hospitalService.getAll()
             .subscribe(
               results => {
-                console.log(results);
                 results.forEach(element => {
                   if (element.id == data.hospital) {
                     temp.push(element);

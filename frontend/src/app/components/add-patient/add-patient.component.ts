@@ -34,7 +34,6 @@ export class AddPatientComponent implements OnInit {
       .subscribe(
         data => {
           this.doctors = data;
-          console.log(data);
         },
         error => {
           console.log(error);
@@ -59,7 +58,6 @@ export class AddPatientComponent implements OnInit {
       gender: this.patient.gender,
     };
 
-    console.log(this.currentDoctor);
     this.patientService.create(data)
       .subscribe(
         response => {

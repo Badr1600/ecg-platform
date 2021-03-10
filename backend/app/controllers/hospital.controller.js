@@ -12,7 +12,7 @@ exports.create = (req, res) => {
             location: req.body.location
         });
         hospital.save((err, hospital) => {
-            if(err) return res.status(500).send(err);
+            if (err) return res.status(500).send(err);
             return res.status(200).json(hospital);
         });
     }
@@ -66,6 +66,42 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.updateArrayDoctor = (req, res) => {
+    const id = req.params.id;
+    const doctors = req.body.doctor;
+
+    if (req.body.addDoctor == true) {
+        Hospital.findByIdAndUpdate(
+            { _id: id },
+            { $push: { "doctors": doctors } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+
+    if (req.body.deleteDoctor == true) {
+        Hospital.findByIdAndUpdate(
+            { _id: id },
+            { $pull: { "doctors": doctors } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+
+}
+
+exports.updateArrayPatient = (req, res) => {
+    const id = req.params.id;
+    const patients = req.body.patient;
+
+    if (req.body.addPatient == true) {
+        Hospital.findByIdAndUpdate(
+            { _id: id },
+            { $push: { "patients": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+
+    if (req.body.deletePatient == true) {
+        Hospital.findByIdAndUpdate(
+            { _id: id },
+            { $pull: { "patients": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+
+}
+
 exports.update = (req, res) => {
     if (!req.body) {
         return res.status(400).send({
@@ -114,28 +150,28 @@ exports.delete = (req, res) => {
 
 exports.deleteAll = (req, res) => {
     Hospital.deleteMany({})
-    .then(data => {
-      res.send({
-        message: `${data.deletedCount} Hospitals were deleted successfully!`
-      });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all Hospitals."
-      });
-    });
+        .then(data => {
+            res.send({
+                message: `${data.deletedCount} Hospitals were deleted successfully!`
+            });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while removing all Hospitals."
+            });
+        });
 };
 
 exports.findAllPublished = (req, res) => {
     Hospital.find({ published: true })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Hospitals."
-      });
-    });
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving Hospitals."
+            });
+        });
 };

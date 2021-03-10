@@ -29,6 +29,14 @@ export class HospitalsService {
     return this.http.put(`${baseUrl}/${id}`, data);
   }
 
+  updateArrayDoctor(id, data): Observable<any> {
+    return this.http.put(`${baseUrl}/updateDoctor/${id}`, data);
+  }
+
+  updateArrayPatient(id, data): Observable<any> {
+    return this.http.put(`${baseUrl}/updatePatient/${id}`, data);
+  }
+
   delete(id): Observable<any> {
     return this.http.delete(`${baseUrl}/${id}`);
   }

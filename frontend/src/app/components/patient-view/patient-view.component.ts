@@ -3,6 +3,7 @@ import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { MedicalsService } from 'src/app/_services/medicals.service';
+import { RecordsService } from 'src/app/_services/records.service';;
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -23,11 +24,14 @@ export class PatientViewComponent implements OnInit {
   currentIndex = -1;
   title = '';
 
+  fileToUpload: File = null;
+
   constructor(
     private patientService: PatientsService,
     private doctorService: DoctorsService,
     private hospitalService: HospitalsService,
     private medicalService: MedicalsService,
+    private recordService: RecordsService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -35,27 +39,33 @@ export class PatientViewComponent implements OnInit {
     this.getPatient(this.route.snapshot.paramMap.get('id'));
   }
 
+  patientId = this.route.snapshot.paramMap.get('id');
+
   retrieveMedicals(id): void {
     var temp = [];
     this.patientService.get(id)
       .subscribe(
         data => {
           this.medicalService.getAll()
-          .subscribe(
-            results => {
-              console.log(results);
-              results.forEach(element => {
-                if (element.patient == data.id) {
-                  temp.push(element);
-                }
-                this.medicals = temp;
-              });
-            }
-          )
+            .subscribe(
+              results => {
+                results.forEach(element => {
+                  if (element.patient == data.id) {
+                    temp.push(element);
+                  }
+                  this.medicals = temp;
+                });
+              }
+            )
         },
         error => {
           console.log(error);
         });
+  }
+
+  fileUpload(files: FileList) {
+    this.fileToUpload = files.item(0);
+    this.recordService.uploadFile(this.patientId, this.fileToUpload);
   }
 
   getPatient(id): void {
@@ -105,7 +115,7 @@ export class PatientViewComponent implements OnInit {
           console.log(error);
         });
   }
-  
+
   setActiveDoctor(doctor, index): void {
     this.currentDoctor = doctor;
     this.currentIndex = index;
@@ -117,7 +127,7 @@ export class PatientViewComponent implements OnInit {
     this.router.navigate(['/medicalsView/' + this.currentMedical.id]);
   }
 
-   refreshview(): void {
+  refreshview(): void {
     this.currentPatient = null;
     this.currentIndex = -1;
   }

@@ -51,6 +51,24 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.updateArray = (req, res) => {
+    const id = req.params.id;
+    const patients = req.body.patient;
+
+    if (req.body.addPatient == true) {
+        Doctor.findByIdAndUpdate(
+            { _id: id },
+            { $push: { "patient": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+
+    if (req.body.deletePatient == true) {
+        Doctor.findByIdAndUpdate(
+            { _id: id },
+            { $pull: { "patient": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+    }
+    
+}
+
 exports.update = (req, res) => {
     if (!req.body) {
         return res.status(400).send({

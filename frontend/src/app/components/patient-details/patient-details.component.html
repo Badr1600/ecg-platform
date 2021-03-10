@@ -31,10 +31,9 @@
             </div>
 
             <div class="form-group">
-                <label for="title"><strong>Hospitals:</strong></label> {{ currentHospital?.title }}
+                <label for="title"><strong>Hospital:</strong></label> {{ currentHospital?.title }}
                 <ul class="list-group">
-                    <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
-                        [class.active]="i == currentIndexHospital" (click)="setActiveHospital(hospital, i)">
+                    <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index">
                         {{ hospital.title }}
                     </li>
                 </ul>

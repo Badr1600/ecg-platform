@@ -33,7 +33,7 @@
                 {{ currentDoctor.description }}
             </div>
             <div>
-                <label><strong>Hospital:</strong></label> {{ currentHospital }}
+                <label><strong>Hospital:</strong></label> {{ currentHospital?.title }}
             </div>
 
             <a class="badge badge-warning mr-2" routerLink="/doctors/{{ currentDoctor.id }}">

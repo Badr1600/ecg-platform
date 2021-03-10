@@ -54,6 +54,16 @@ export class AddDoctorComponent implements OnInit {
       .subscribe(
         response => {
           this.submitted = true;
+          
+          console.log(response.id);
+
+          const addDoctor = {
+            doctor: response,
+            add: true
+          }
+
+          this.hospitalService.updateArrayDoctor(this.currentHospital.id, addDoctor).subscribe(response => {
+          });
         },
         error => {
           console.log(error);
