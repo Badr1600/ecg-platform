@@ -56,13 +56,13 @@ exports.updateArray = (req, res) => {
     const patients = req.body.patient;
 
     if (req.body.addPatient == true) {
-        Doctor.findByIdAndUpdate(
+        Doctor.findOneAndUpdate(
             { _id: id },
             { $push: { "patient": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
     }
 
     if (req.body.deletePatient == true) {
-        Doctor.findByIdAndUpdate(
+        Doctor.findOneAndUpdate(
             { _id: id },
             { $pull: { "patient": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
     }

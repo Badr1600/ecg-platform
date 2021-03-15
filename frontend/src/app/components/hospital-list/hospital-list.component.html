@@ -1,50 +1,46 @@
-<div class="list row">
-    <div class="col-md-8">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search by title" [(ngModel)]="title" />
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
-                    Search
-                </button>
-            </div>
+<div class="animated fadeIn">
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Hospitals
         </div>
-    </div>
-    <div class="col-md-6">
-        <h4>Hospitals List</h4>
-        <ul class="list-group">
-            <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
-                [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
-                {{ hospital.title }}
-            </li>
-        </ul>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div *ngIf="!currentHospital">
+                        <p>Please click on a hospital...</p>
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
+                            [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
+                            {{ hospital.title }}
+                        </li>
+                    </ul>
+                    <button class="m-3 btn btn-sm btn-danger" (click)="removeAllHospitals()">
+                        Remove All
+                    </button>
+                </div>
 
-        <button class="m-3 btn btn-sm btn-danger" (click)="removeAllHospitals()">
-            Remove All
-        </button>
-    </div>
-    <div class="col-md-6">
-        <div *ngIf="currentHospital">
-            <h4>Hospital:</h4>
-            <div>
-                <label><strong>Title:</strong></label> {{ currentHospital.title }}
+                <div class="col-8">
+                    <div *ngIf="currentHospital">
+                        <h4>Hospital:</h4>
+                        <div>
+                            <label><strong>Title:</strong></label> {{ currentHospital.title }}
+                        </div>
+                        <div>
+                            <label *ngIf="currentHospital?.title"><strong>Location:</strong></label> {{
+                            currentHospital?.location }}
+                        </div>
+                        <a class="badge badge-warning mr-2" routerLink="/hospitals/{{ currentHospital.id }}">
+                            Edit
+                        </a>
+                        <a class="badge badge-success mr-2" routerLink="/hospitalsView/{{ currentHospital.id }}">
+                            View
+                        </a>
+                    </div>
+                </div>
             </div>
-            <div>
-                <label><strong>Location:</strong></label>
-                {{ currentHospital.location }}
-            </div>
-
-            <a class="badge badge-warning mr-2" routerLink="/hospitals/{{ currentHospital.id }}">
-                Edit
-            </a>
-            
-            <a class="badge badge-success mr-2" routerLink="/hospitalsView/{{ currentHospital.id }}">
-                View
-            </a>
-        </div>
-
-        <div *ngIf="!currentHospital">
-            <br />
-            <p>Please click on a hospital...</p>
         </div>
     </div>
 </div>
+

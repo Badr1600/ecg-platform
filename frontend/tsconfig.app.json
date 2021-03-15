@@ -2,8 +2,17 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "paths": {
+      "@angular/*": [
+        "../node_modules/@angular/*"
+      ]
+    },
     "outDir": "./out-tsc/app",
     "types": []
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "importHelpers": true
   },
   "files": [
     "src/main.ts",

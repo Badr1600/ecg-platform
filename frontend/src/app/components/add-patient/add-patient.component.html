@@ -1,30 +1,37 @@
-<div style="width: 400px; margin: auto;">
-  <div class="submit-form">
-    <div *ngIf="!submitted">
-      <div class="form-group">
-        <label for="title">Name</label>
-        <input type="text" class="form-control" id="title" required [(ngModel)]="patient.title" name="title" />
-      </div>
-
-      <div class="form-group">
-        <label for="age">Age</label>
-        <input class="form-control" id="age" required [(ngModel)]="patient.age" name="age" />
-      </div>
-
-      <div class="form-group">
-        <label for="gender">Gender</label>
-        <select class="form-control" id="gender" required [(ngModel)]="patient.gender" name="gender">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-      </div>
-
-      <button (click)="savePatient()" class="btn btn-success">Submit</button>
+<div class="animated fadeIn">
+  <br />
+  <div class="card">
+    <div class="card-header">
+      <i class="icon-drop"></i> Add Patient
     </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-4">
+          <div class="submit-form">
+            <div *ngIf="!submitted">
+              <div class="form-group">
+                <label for="title">Name</label>
+                <input type="text" class="form-control" id="title" required [(ngModel)]="patient.title" name="title" />
+              </div>
 
-    <div *ngIf="submitted">
-      <h4>You submitted successfully!</h4>
-      <button class="btn btn-success" (click)="newPatient()">Add</button>
+              <div class="form-group">
+                <label for="age">Age</label>
+                <input class="form-control" id="age" required [(ngModel)]="patient.age" name="age" />
+              </div>
+
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select class="form-control" id="gender" required [(ngModel)]="patient.gender" name="gender">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              
+              <button (click)="savePatient()" class="btn btn-success">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

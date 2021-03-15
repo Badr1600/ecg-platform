@@ -1,28 +1,36 @@
-<div class="list row">
-    <div class="col-md-8">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search by title"/>
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
-                    Search
-                </button>
-            </div>
+<div class="animated fadeIn">
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Doctors
         </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search by title"/>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
+                                Search
+                            </button>
+                        </div>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="name"><strong>Name:</strong></label>  {{ currentDoctor?.title }}
+                    </div>
 
-        <div class="form-group">
-            <label for="name"><strong>Name:</strong></label>  {{ currentDoctor?.title }}
-        </div>
-    </div>
-   
-    <div class="col-md-6">
-        <div class="form-group">
-            <label for="hospital"><strong>Hospital:</strong></label>
-            <ul class="list-group">
-                <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
-                    [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
-                    {{ hospital.title }}
-                </li>
-            </ul>
+                    <div class="form-group">
+                        <label for="hospital"><strong>Hospital:</strong></label>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
+                                [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
+                                {{ hospital.title }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

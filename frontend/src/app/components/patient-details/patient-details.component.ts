@@ -208,7 +208,7 @@ export class PatientDetailsComponent implements OnInit {
           this.hospitalService.updateArrayPatient(this.hospitals[0].id, hospitalAdd).subscribe(content => {
           });
 
-          //this.refresh();
+          this.refresh();
         },
         error => {
           console.log(error);
@@ -232,7 +232,7 @@ export class PatientDetailsComponent implements OnInit {
           if (this.currentDoctor.id == this.currentPatient.doctor) {
             const patientRemove = {
               patient: this.currentPatient.id,
-              delete: true
+              deletePatient: true
             }
 
             this.doctorService.updateArray(this.currentDoctor.id, patientRemove).subscribe(response => {
@@ -242,7 +242,7 @@ export class PatientDetailsComponent implements OnInit {
           if (this.currentPatient.hospital) {
             const hospitalRemove = {
               patient: this.currentPatient.id,
-              delete: true
+              deletePatient: true
             }
 
             this.hospitalService.updateArrayPatient(this.currentPatient.hospital, hospitalRemove).subscribe(content => {
