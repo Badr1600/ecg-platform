@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { OnDestroy, Component, OnInit, Renderer2 } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
-
 
 @Component({
   selector: 'app-patient-list',
@@ -14,24 +15,40 @@ export class PatientListComponent implements OnInit {
   currentDoctor = null;
   currentHospital = null;
   patients: any;
+  doctors: any;
+  hospitals: any;
   currentPatient = null;
   currentIndex = -1;
   title = '';
+  dtOptions: DataTables.Settings = {};
+
+  dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(
     private patientService: PatientsService,
     private hospitalService: HospitalsService,
-    private doctorService: DoctorsService) { }
+    private doctorService: DoctorsService,
+    private renderer: Renderer2,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.retrievePatients();
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 
   getDoctor(id): void {
     this.doctorService.get(id)
       .subscribe(
         data => {
-          this.currentDoctor = data;
+          this.doctors = data;
+          for (var i = 0; i < this.patients.length; i++) {
+            if (this.patients[i].doctor == this.doctors.id) {
+              this.patients[i].doctor = this.doctors.title;
+            }
+          }
         },
         error => {
           console.log(error);
@@ -42,7 +59,12 @@ export class PatientListComponent implements OnInit {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          this.currentHospital = data;
+          this.hospitals = data;
+          for (var i = 0; i < this.patients.length; i++) {
+            if (this.patients[i].hospital == this.hospitals.id) {
+              this.patients[i].hospital = this.hospitals.title;
+            }
+          }
         },
         error => {
           console.log(error);
@@ -54,10 +76,21 @@ export class PatientListComponent implements OnInit {
       .subscribe(
         data => {
           this.patients = data;
+          this.dtTrigger.next();
+
+          this.patients.forEach(element => {
+            this.getDoctor(element.doctor);
+            this.getHospital(element.hospital);
+          });
+
         },
         error => {
           console.log(error);
         });
+
+    this.dtOptions = {
+      pagingType: 'full_numbers'
+    };
   }
 
   refreshList(): void {
@@ -66,13 +99,8 @@ export class PatientListComponent implements OnInit {
     this.currentIndex = -1;
   }
 
-  setActivePatient(patient, index): void {
+  setActivePatient(patient): void {
     this.currentPatient = patient;
-    this.currentIndex = index;
-    if (this.currentPatient.doctor != null && this.currentPatient.hospital != null) {
-      this.getDoctor(this.currentPatient.doctor);
-      this.getHospital(this.currentPatient.hospital);
-    }
   }
 
   removeAllPatients(): void {

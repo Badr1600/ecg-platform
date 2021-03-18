@@ -6,38 +6,30 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-4">
-                    <div *ngIf="!currentHospital">
-                        <p>Please click on a hospital...</p>
-                    </div>
-                    <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let hospital of hospitals; let i = index"
-                            [class.active]="i == currentIndex" (click)="setActiveHospital(hospital, i)">
-                            {{ hospital.title }}
-                        </li>
-                    </ul>
+                <div class="col-xl-12">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Location</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let hospital of hospitals">
+                                <td>{{ hospital.title }}</td>
+                                <td>{{ hospital.location }}</td>
+                                <td>
+                                    <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActiveHospital(hospital)" routerLink="/hospitalsView/{{ hospital.id }}">View</button>
+                                    <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActiveHospital(hospital)" routerLink="/hospitals/{{ hospital.id }}">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                     <button class="m-3 btn btn-sm btn-danger" (click)="removeAllHospitals()">
                         Remove All
                     </button>
-                </div>
-
-                <div class="col-8">
-                    <div *ngIf="currentHospital">
-                        <h4>Hospital:</h4>
-                        <div>
-                            <label><strong>Title:</strong></label> {{ currentHospital.title }}
-                        </div>
-                        <div>
-                            <label *ngIf="currentHospital?.title"><strong>Location:</strong></label> {{
-                            currentHospital?.location }}
-                        </div>
-                        <a class="badge badge-warning mr-2" routerLink="/hospitals/{{ currentHospital.id }}">
-                            Edit
-                        </a>
-                        <a class="badge badge-success mr-2" routerLink="/hospitalsView/{{ currentHospital.id }}">
-                            View
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

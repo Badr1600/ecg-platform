@@ -4,61 +4,38 @@
         <div class="card-header">
             <i class="icon-drop"></i> Patients
         </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-4">
-                    <div *ngIf="!currentPatient">
-                        <p>Please click on a patient...</p>
-                    </div>
-                    <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let patient of patients; let i = index"
-                            [class.active]="i == currentIndex" (click)="setActivePatient(patient, i)">
-                            {{ patient.title }}
-                        </li>
-                    </ul>
+        <div class="card-body" style="height: 100">
+            <div class="row-xl-10">
+                <div class="col-xl-12">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Doctor</th>
+                                <th>Hospital</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let patient of patients">
+                                <td>{{ patient.title }}</td>
+                                <td>{{ patient.age }}</td>
+                                <td>{{ patient.gender }}</td>
+                                <td>{{ patient.doctor }}</td>
+                                <td>{{ patient.hospital }}</td>
+                                <td>
+                                    <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActivePatient(patient)" routerLink="/patientsView/{{ patient.id }}">View</button>
+                                    <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActivePatient(patient)" routerLink="/patients/{{ patient.id }}">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                     <button class="m-3 btn btn-sm btn-danger" (click)="removeAllPatients()">
                         Remove All
                     </button>
-                </div>
-
-                <div class="col-8">
-                    <div *ngIf="currentPatient">
-                        <h4>Patient:</h4>
-                        <div>
-                            <label><strong>Title:</strong></label> {{ currentPatient.title }}
-                        </div>
-                        <div>
-                            <label><strong>Age:</strong></label>
-                            {{ currentPatient.age }}
-                        </div>
-                        <div>
-                            <label><strong>Gender:</strong></label>
-                            {{ currentPatient.gender }}
-                        </div>
-                        <div>
-                            <label *ngIf="currentDoctor?.title"><strong>Doctor:</strong></label> {{ currentDoctor?.title
-                            }}
-                        </div>
-                        <div>
-                            <label *ngIf="currentHospital?.title"><strong>Hospital:</strong></label> {{
-                            currentHospital?.title }}
-                        </div>
-
-                        <a class="badge badge-warning mr-2" routerLink="/patients/{{ currentPatient.id }}">
-                            Edit
-                        </a>
-                        <a class="badge badge-success mr-2" routerLink="/patientsView/{{ currentPatient.id }}">
-                            View
-                        </a>
-                        <a *ngIf="!currentDoctor?.title" class="badge badge-success mr-2"
-                            routerLink="/patients/{{ currentPatient.id }}">
-                            Add Doctor
-                        </a>
-                        <a *ngIf="currentDoctor?.title" class="badge badge-success mr-2"
-                            routerLink="/patients/{{ currentPatient.id }}">
-                            Change Doctor
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

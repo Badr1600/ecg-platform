@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { OnDestroy, Component, OnInit, Renderer2 } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 
 @Component({
@@ -8,11 +10,13 @@ import { HospitalsService } from 'src/app/_services/hospitals.service';
 })
 
 export class HospitalListComponent implements OnInit {
-
   hospitals: any;
   currentHospital = null;
   currentIndex = -1;
   title = '';
+  dtOptions: DataTables.Settings = {};
+
+  dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(private hospitalService: HospitalsService) { }
 
@@ -20,15 +24,24 @@ export class HospitalListComponent implements OnInit {
     this.retrieveHospitals();
   }
 
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
+
   retrieveHospitals(): void {
     this.hospitalService.getAll()
       .subscribe(
         data => {
           this.hospitals = data;
+          this.dtTrigger.next();
         },
         error => {
           console.log(error);
         });
+
+    this.dtOptions = {
+      pagingType: 'full_numbers',
+    };
   }
 
   refreshList(): void {
@@ -37,9 +50,8 @@ export class HospitalListComponent implements OnInit {
     this.currentIndex = -1;
   }
 
-  setActiveHospital(hospital, index): void {
+  setActiveHospital(hospital): void {
     this.currentHospital = hospital;
-    this.currentIndex = index;
   }
 
   removeAllHospitals(): void {

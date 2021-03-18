@@ -6,41 +6,30 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-4">
-                    <div *ngIf="!currentDoctor">
-                        <p>Please click on a doctor...</p>
-                    </div>
-                    <ul class="list-group">
-                        <li class="list-group-item" *ngFor="let doctor of doctors; let i = index"
-                            [class.active]="i == currentIndex" (click)="setActiveDoctor(doctor, i)">
-                            {{ doctor.title }}
-                        </li>
-                    </ul>
+                <div class="col-xl-12">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Hospital</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let doctor of doctors">
+                                <td>{{ doctor.title }}</td>
+                                <td>{{ doctor.hospital }}</td>
+                                <td>
+                                    <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActiveDoctor(doctor)" routerLink="/doctorsView/{{ doctor.id }}">View</button>
+                                    <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActiveDoctor(doctor)" routerLink="/doctors/{{ doctor.id }}">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                     <button class="m-3 btn btn-sm btn-danger" (click)="removeAllDoctors()">
                         Remove All
                     </button>
-                </div>
-
-                <div class="col-8">
-                    <div *ngIf="currentDoctor">
-                        <h4>Doctor:</h4>
-                        <div>
-                            <label><strong>Title:</strong></label> {{ currentDoctor.title }}
-                        </div>
-                        <div>
-                            <label *ngIf="currentDoctor?.title"><strong>Description:</strong></label> {{ currentDoctor?.description }}
-                        </div>
-                        <div>
-                            <label *ngIf="currentHospital?.title"><strong>Hospital:</strong></label> {{
-                            currentHospital?.title }}
-                        </div>
-                        <a class="badge badge-warning mr-2" routerLink="/doctors/{{ currentDoctor.id }}">
-                            Edit
-                        </a>
-                        <a class="badge badge-success mr-2" routerLink="/doctorsView/{{ currentDoctor.id }}">
-                            View
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>

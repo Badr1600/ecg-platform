@@ -22,7 +22,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 import { P404Component } from './views/error/404.component';
 import { P500Component } from './views/error/500.component';
 
-
 import {
   AppAsideModule,
   AppBreadcrumbModule,
@@ -61,6 +60,7 @@ import { AddMedicalComponent } from './components/add-medical/add-medical.compon
 import { MedicalDetailsComponent } from './components/medical-details/medical-details.component';
 import { MedicalViewComponent } from './components/medical-view/medical-view.component';
 import { authInterceptorProviders } from './_helpers/auth.interceptor';
+import { DataTablesModule } from "angular-datatables";
 
 @NgModule({
   declarations: [
@@ -104,6 +104,8 @@ import { authInterceptorProviders } from './_helpers/auth.interceptor';
     ChartsModule,
     IconModule,
     IconSetModule.forRoot(),
+
+    DataTablesModule,
 
     BrowserModule,
     CommonModule,

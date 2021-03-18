@@ -1,26 +1,42 @@
-<div class="list row">
-    <div class="col-md-8">
-        <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search by title" />
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
-                    Search
-                </button>
+<div class="animated fadeIn">
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Medical Record
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search by title" />
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
+                            Search
+                        </button>
+                    </div>
+                </div>
+        
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="name"><strong>Name:</strong></label> {{ currentMedical?.title }}
+                    </div>
+                    <div class="form-group">
+                        <label for="hospital"><strong>Type:</strong></label> {{ currentMedical?.type }}
+                    </div>
+                    <div class="form-group">
+                        <label for="hospital"><strong>Patient:</strong></label> {{ currentPatient?.title }}
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="form-group">
-            <label for="name"><strong>Name:</strong></label> {{ currentMedical?.title }}
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> ECG Graph
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div id="target" class="row content"></div>
+            </div>
         </div>
     </div>
-
-    <div class="col-md-6">
-        <div class="form-group">
-            <label for="hospital"><strong>Type:</strong></label> {{ currentMedical?.type }}
-        </div>
-        <div class="form-group">
-            <label for="hospital"><strong>Patient:</strong></label> {{ currentPatient?.title }}
-        </div>
-    </div>
-
 </div>

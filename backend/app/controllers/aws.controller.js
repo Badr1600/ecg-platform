@@ -9,6 +9,7 @@ const { strict } = require('assert');
 
 exports.findCSV = (req, res) => {
     const results = [];
+    
     (async function () {
         const id = req.params.id + '/';
 
@@ -31,10 +32,8 @@ exports.findCSV = (req, res) => {
                     console.log(err, err.stack); // an error occurred
                 } else {
                     var contents = data.Contents;
-
                     contents.forEach(content => {
                         if (content.Key.includes(id)) {
-                            console.log(content);
                             if (content.Key.includes('.csv') == true) {
                                 objects.push(content);
                             }

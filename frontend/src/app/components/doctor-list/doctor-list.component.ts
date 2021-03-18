@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { OnDestroy, Component, OnInit, Renderer2 } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 
@@ -9,24 +11,38 @@ import { HospitalsService } from 'src/app/_services/hospitals.service';
 })
 
 export class DoctorListComponent implements OnInit {
-  currentHospital = null;
+  hospitals: any;
   doctors: any;
   currentDoctor = null;
   currentIndex = -1;
   name = '';
+  dtOptions: DataTables.Settings = {};
 
-  constructor(private doctorService: DoctorsService,
+  dtTrigger: Subject<any> = new Subject<any>();
+
+  constructor(
+    private doctorService: DoctorsService,
     private hospitalService: HospitalsService) { }
 
   ngOnInit(): void {
     this.retrieveDoctors();
   }
 
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
+  }
+
   getHospital(id): void {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          this.currentHospital = data;
+          this.hospitals = data;
+
+          for (var i = 0; i < this.doctors.length; i++) {
+            if (this.doctors[i].hospital == this.hospitals.id) {
+              this.doctors[i].hospital = this.hospitals.title;
+            }
+          }
         },
         error => {
           console.log(error);
@@ -38,10 +54,20 @@ export class DoctorListComponent implements OnInit {
       .subscribe(
         data => {
           this.doctors = data;
+          this.dtTrigger.next();
+
+          this.doctors.forEach(element => {
+            this.getHospital(element.hospital);
+          });
+
         },
         error => {
           console.log(error);
         });
+
+    this.dtOptions = {
+      pagingType: 'full_numbers'
+    };
   }
 
   refreshList(): void {
@@ -50,12 +76,8 @@ export class DoctorListComponent implements OnInit {
     this.currentIndex = -1;
   }
 
-  setActiveDoctor(doctor, index): void {
+  setActiveDoctor(doctor): void {
     this.currentDoctor = doctor;
-    this.currentIndex = index;
-    if (this.currentDoctor.hospital != null) {
-      this.getHospital(this.currentDoctor.hospital[0]);
-    }
   }
 
   removeAllDoctors(): void {

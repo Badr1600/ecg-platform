@@ -68,7 +68,10 @@ export class MedicalViewComponent implements OnInit {
   }
 
   createECG(length: any): void {
-    const chart = lightningChart().ChartXY({ containerId: 'container' });
+    const chart = lightningChart().ChartXY({
+      containerId: 'target'
+    });
+
     chart.setTitle('ECG');
 
     const {
