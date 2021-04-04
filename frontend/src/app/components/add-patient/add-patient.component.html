@@ -8,16 +8,27 @@
       <div class="row">
         <div class="col-4">
           <div class="submit-form">
-            <div *ngIf="!submitted">
+            <form *ngIf="!submitted" name="form" (ngSubmit)="f.form.valid && registerPatient()" #f="ngForm" novalidate>
               <div class="form-group">
                 <label for="title">Name</label>
-                <input type="text" class="form-control" id="title" required [(ngModel)]="patient.title" name="title" />
+                <input type="text" class="form-control" name="title" [(ngModel)]="patient.title" required minlength="3"
+                  maxlength="50" #title="ngModel" />
+                <div class="alert-danger" *ngIf="f.submitted && title.invalid">
+                  <div *ngIf="title.errors.required">Name is required</div>
+                  <div *ngIf="title.errors.minlength">
+                    Name must be at least 3 characters
+                  </div>
+                  <div *ngIf="title.errors.maxlength">
+                    Name must be at most 50 characters
+                  </div>
+                </div>
               </div>
 
               <div class="form-group">
                 <label for="age">Age</label>
                 <input class="form-control" id="age" required [(ngModel)]="patient.age" name="age" />
               </div>
+
 
               <div class="form-group">
                 <label for="gender">Gender</label>
@@ -26,9 +37,47 @@
                   <option value="Female">Female</option>
                 </select>
               </div>
-              
-              <button (click)="savePatient()" class="btn btn-success">Submit</button>
-            </div>
+
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" autocomplete="off" class="form-control" name="username" [(ngModel)]="patient.username"
+                  required minlength="3" maxlength="20" #username="ngModel" />
+                <div class="alert-danger" *ngIf="f.submitted && username.invalid">
+                  <div *ngIf="username.errors.required">Username is required</div>
+                  <div *ngIf="username.errors.minlength">
+                    Username must be at least 3 characters
+                  </div>
+                  <div *ngIf="username.errors.maxlength">
+                    Username must be at most 20 characters
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="email" [(ngModel)]="patient.email" required email
+                  #email="ngModel" />
+                <div class="alert-danger" *ngIf="f.submitted && email.invalid">
+                  <div *ngIf="email.errors.required">Email is required</div>
+                  <div *ngIf="email.errors.email">
+                    Email must be a valid email address
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" [(ngModel)]="patient.password" required
+                  minlength="6" #password="ngModel" />
+                <div class="alert-danger" *ngIf="f.submitted && password.invalid">
+                  <div *ngIf="password.errors.required">Password is required</div>
+                  <div *ngIf="password.errors.minlength">
+                    Password must be at least 6 characters
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block">Add Hospital</button>
+            </form>
           </div>
         </div>
       </div>

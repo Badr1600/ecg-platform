@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
+import { AuthService } from 'src/app/_services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -13,6 +14,7 @@ export class HospitalDetailsComponent implements OnInit {
 
   constructor(
     private hospitalService: HospitalsService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -45,15 +47,31 @@ export class HospitalDetailsComponent implements OnInit {
         });
   }
 
+  refresh(): void {
+    this.router.navigate(['/hospitals'])
+      .then(() => {
+        window.location.reload();
+      });
+  }
+
   deleteHospital(): void {
     this.hospitalService.delete(this.currentHospital.id)
       .subscribe(
         response => {
           console.log(response);
-          this.router.navigate(['/hospitals']);
         },
         error => {
           console.log(error);
         });
+
+    this.authService.delete(this.currentHospital.username)
+      .subscribe(
+        response => {
+          console.log(response);
+        },
+        error => {
+          console.log(error);
+        });
+    this.refresh();
   }
 }

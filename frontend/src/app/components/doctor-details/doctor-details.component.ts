@@ -3,7 +3,7 @@ import { DoctorsService } from 'src/app/_services/doctors.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
-
+import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
   selector: 'app-doctor-details',
@@ -25,6 +25,7 @@ export class DoctorDetailsComponent implements OnInit {
     private doctorService: DoctorsService,
     private patientService: PatientsService,
     private hospitalService: HospitalsService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -102,9 +103,9 @@ export class DoctorDetailsComponent implements OnInit {
 
           if (this.currentDoctor.patient.length != 0) {
             this.patientService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
-            });  
+            });
           }
-          
+
           const addDoctor = {
             doctor: this.currentDoctor.id,
             addDoctor: true,
@@ -141,7 +142,7 @@ export class DoctorDetailsComponent implements OnInit {
           this.hospitalService.updateArrayPatient(this.oldHospital.id, removePatients).subscribe(response => {
           });
 
-          //this.refresh();
+          this.refresh();
         },
         error => {
           console.log(error);
@@ -156,14 +157,23 @@ export class DoctorDetailsComponent implements OnInit {
   }
 
   deleteDoctor(): void {
+    console.log(this.currentDoctor);
     this.doctorService.delete(this.currentDoctor.id)
       .subscribe(
         response => {
           console.log(response);
-          this.router.navigate(['/doctors']);
         },
         error => {
           console.log(error);
         });
+    this.authService.delete(this.currentDoctor.username)
+      .subscribe(
+        response => {
+          console.log(response);
+        },
+        error => {
+          console.log(error);
+        });
+    this.refresh();
   }
 }

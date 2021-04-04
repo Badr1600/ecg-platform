@@ -4,6 +4,7 @@ const Patient = mongoose.model(
   "Patient",
   new mongoose.Schema({
     title: String,
+    username: String,
     age: String,
     gender: String,
     doctor: [

@@ -4,7 +4,7 @@ import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { MedicalsService } from 'src/app/_services/medicals.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { temporaryAllocator } from '@angular/compiler/src/render3/view/util';
+import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
   selector: 'app-patient-details',
@@ -36,6 +36,7 @@ export class PatientDetailsComponent implements OnInit {
     private patientService: PatientsService,
     private doctorService: DoctorsService,
     private medicalService: MedicalsService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router) { }
 
@@ -248,7 +249,16 @@ export class PatientDetailsComponent implements OnInit {
             this.hospitalService.updateArrayPatient(this.currentPatient.hospital, hospitalRemove).subscribe(content => {
             });
           }
-          this.router.navigate(['/patients']);
+          this.refresh();
+        },
+        error => {
+          console.log(error);
+        });
+
+    this.authService.delete(this.currentPatient.username)
+      .subscribe(
+        response => {
+          console.log(response);
         },
         error => {
           console.log(error);

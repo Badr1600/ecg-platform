@@ -9,7 +9,8 @@ exports.create = (req, res) => {
     if (req.method == 'POST') {
         var hospital = new Hospital({
             title: req.body.title,
-            location: req.body.location
+            location: req.body.location,
+            username: req.body.username
         });
         hospital.save((err, hospital) => {
             if (err) return res.status(500).send(err);

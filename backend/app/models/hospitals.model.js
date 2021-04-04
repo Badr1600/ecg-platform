@@ -5,6 +5,7 @@ const Hospital = mongoose.model(
   new mongoose.Schema({
     title: String,
     location: String,
+    username: String,
     doctors: [
       {
         type: mongoose.Schema.Types.ObjectId,

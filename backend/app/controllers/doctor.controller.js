@@ -10,7 +10,8 @@ exports.create = (req, res) => {
         var doctor = new Doctor({
             title: req.body.title,
             hospital: req.body.hospital,
-            patient: req.body.patient
+            patient: req.body.patient,
+            username: req.body.username
         });
         doctor.save((err, doctor) => {
             if(err) return res.status(500).send(err);

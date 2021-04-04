@@ -26,7 +26,13 @@ export class AuthService {
     return this.http.post(AUTH_API + 'signup', {
       username: user.username,
       email: user.email,
-      password: user.password
+      password: user.password,
+      roles: user.roles
     }, httpOptions);
   }
+
+  delete(username): Observable<any> {
+    return this.http.delete(`${AUTH_API}delete/${username}`);
+  }
+
 }

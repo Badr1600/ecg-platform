@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
   selector: 'app-add-patient',
@@ -12,6 +14,10 @@ export class AddPatientComponent implements OnInit {
     title: '',
     age: '',
     gender: '',
+    username: '',
+    email: '',
+    password: '',
+    roles: ''
   };
   submitted = false;
   patients: any;
@@ -21,6 +27,8 @@ export class AddPatientComponent implements OnInit {
   currentPatient = null;
 
   constructor(
+    private authService: AuthService,
+    private router: Router,
     private patientService: PatientsService,
     private doctorService: DoctorsService) { }
 
@@ -51,11 +59,33 @@ export class AddPatientComponent implements OnInit {
     this.currentDoctor = doctor;
   }
 
+  registerPatient(): void {
+    const register = {
+      username: this.patient.username,
+      email: this.patient.email,
+      password: this.patient.password,
+      roles: ["patient"]
+    }
+
+    console.log(register);
+
+    this.authService.register(register).subscribe(
+      data => {
+        console.log(data);
+        this.submitted = true;
+        this.savePatient();
+      },
+      err => {
+      }
+    );
+  }
+
   savePatient(): void {
     const data = {
       title: this.patient.title,
       age: this.patient.age,
       gender: this.patient.gender,
+      username: this.patient.username,
     };
 
     this.patientService.create(data)
@@ -66,6 +96,15 @@ export class AddPatientComponent implements OnInit {
         error => {
           console.log(error);
         });
+    //this.refresh();
+
+  }
+
+  refresh(): void {
+    this.router.navigate(['/addPatient'])
+      .then(() => {
+        window.location.reload();
+      });
   }
 
   newPatient(): void {
@@ -74,6 +113,10 @@ export class AddPatientComponent implements OnInit {
       title: '',
       age: '',
       gender: '',
+      username: '',
+      email: '',
+      password: '',
+      roles: ''
     };
   }
 

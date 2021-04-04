@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
+import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
   selector: 'app-add-doctor',
@@ -11,7 +13,11 @@ export class AddDoctorComponent implements OnInit {
   doctor = {
     title: '',
     patients: '',
-    hospital: ''
+    hospital: '',
+    username: '',
+    email: '',
+    password: '',
+    roles: ''
   };
   submitted = false;
   patients: any;
@@ -21,6 +27,8 @@ export class AddDoctorComponent implements OnInit {
   currentHospital = null;
 
   constructor(
+    private authService: AuthService,
+    private router: Router,
     private doctorService: DoctorsService,
     private hospitalService: HospitalsService) { }
 
@@ -33,7 +41,6 @@ export class AddDoctorComponent implements OnInit {
       .subscribe(
         data => {
           this.hospitals = data;
-          console.log(data);
         },
         error => {
           console.log(error);
@@ -45,18 +52,35 @@ export class AddDoctorComponent implements OnInit {
     this.currentHospital = hospital;
   }
 
+  registerDoctor(): void {
+    const register = {
+      username: this.doctor.username,
+      email: this.doctor.email,
+      password: this.doctor.password,
+      roles: ["doctor"]
+    }
+
+    this.authService.register(register).subscribe(
+      data => {
+        this.submitted = true;
+        this.saveDoctor();
+      },
+      err => {
+      }
+    );
+  }
+
   saveDoctor(): void {
     const data = {
       title: this.doctor.title,
-      hospital: this.currentHospital.id
+      hospital: this.currentHospital.id,
+      username: this.doctor.username
     };
     this.doctorService.create(data)
       .subscribe(
         response => {
           this.submitted = true;
           
-          console.log(response.id);
-
           const addDoctor = {
             doctor: response,
             add: true
@@ -70,7 +94,14 @@ export class AddDoctorComponent implements OnInit {
         });
 
         console.log(this.currentHospital.id);
-        
+        this.refresh();
+  }
+
+  refresh(): void {
+    this.router.navigate(['/addDoctor'])
+      .then(() => {
+        window.location.reload();
+      });
   }
 
   newDoctor(): void {
@@ -78,7 +109,11 @@ export class AddDoctorComponent implements OnInit {
     this.doctor = {
       title: '',
       patients: '',
-      hospital: ''
+      hospital: '',
+      username: '',
+      email: '',
+      password: '',
+      roles: ''
     };
   }
 

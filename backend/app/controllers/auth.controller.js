@@ -107,3 +107,30 @@ exports.signin = (req, res) => {
       });
     });
 };
+
+exports.delete = (req, res) => {
+  const username = req.params.username;
+
+  User.findOneAndDelete(
+    {
+      username: { $in: req.params.username }
+    },
+  )
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete user with username=${username}. Maybe user was not found!`
+        });
+      } else {
+        res.send({
+          message: `User ${username} was deleted successfully!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete user with username=" + username
+      });
+    });
+};
+

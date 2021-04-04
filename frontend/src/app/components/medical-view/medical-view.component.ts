@@ -1,33 +1,25 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy } from '@angular/core';
+import { lightningChart, ChartXY, Point, Axis, NumericTickStrategy, emptyTick } from '@arction/lcjs';
 import { MedicalsService } from 'src/app/_services/medicals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { RecordsService } from 'src/app/_services/records.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { parse } from "papaparse";
-import * as Highcharts from 'highcharts';
-
-declare var require: any;
-let Boost = require('highcharts/modules/boost');
-let noData = require('highcharts/modules/no-data-to-display');
-let More = require('highcharts/highcharts-more');
-
-Boost(Highcharts);
-noData(Highcharts);
-More(Highcharts);
-noData(Highcharts);
 
 const lcjs = require('@arction/lcjs')
 
 const {
-  lightningChart,
   DataPatterns,
   AxisScrollStrategies,
   SolidLine,
   SolidFill,
   ColorHEX,
+  ColorRGBA,
   AutoCursorModes,
-  Themes
+  VisibleTicks,
+  emptyLine,
+  AxisTickStrategies,
 } = lcjs
 
 
@@ -38,6 +30,8 @@ const {
 })
 
 export class MedicalViewComponent implements OnInit {
+  chart: ChartXY;
+  chartId: number;
   medicals: any;
   hospitals: any;
   medicalData: any[] = [];
@@ -50,6 +44,17 @@ export class MedicalViewComponent implements OnInit {
   currentIndex = -1;
   title = '';
 
+  @Input() points: Point[];
+
+  ngOnChanges() {
+    // Generate random ID to us as the containerId for the chart and the target div id
+    this.chartId = Math.trunc(Math.random() * 1000000);
+  }
+
+  ngAfterViewInit() {
+    this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+  }
+
   constructor(
     private medicalService: MedicalsService,
     private hospitalService: HospitalsService,
@@ -60,7 +65,7 @@ export class MedicalViewComponent implements OnInit {
   ngOnInit(): void {
     this.getMedical(this.route.snapshot.paramMap.get('id'));
     this.retrieveHospitals(this.route.snapshot.paramMap.get('id'));
-    this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+
   }
 
   isValidCSVFile(file: any) {
@@ -69,7 +74,7 @@ export class MedicalViewComponent implements OnInit {
 
   createECG(length: any): void {
     const chart = lightningChart().ChartXY({
-      containerId: 'target'
+      container: `target`
     });
 
     chart.setTitle('ECG');
@@ -80,16 +85,58 @@ export class MedicalViewComponent implements OnInit {
 
     chart.setAutoCursorMode(AutoCursorModes.disabled)
 
+    chart.setSeriesBackgroundFillStyle(new SolidFill({ color: ColorHEX('#FFFFFF') }))
+    chart.setBackgroundFillStyle(new SolidFill({ color: ColorHEX('#000') }))
+
     // Setup view nicely.
     chart.getDefaultAxisY()
       .setTitle('heartrate')
       .setInterval(0.2, 0.4)
       .setScrollStrategy(AxisScrollStrategies.expansion)
+      .setTickStrategy(
+        // Base TickStrategy to modify
+        AxisTickStrategies.Numeric,
+        // Modify the TickStrategy through a mutator
+        (tickStrategy) => tickStrategy
+            // Use custom grid stroke for the Major Ticks.
+            .setMajorTickStyle(tickStyle => tickStyle
+                .setGridStrokeStyle(new SolidLine({
+                  thickness: 3,
+                  fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
+                }))
+            )
+            .setMinorTickStyle(tickStyle => tickStyle
+              .setGridStrokeStyle(new SolidLine({
+                thickness: 2,
+                fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
+              }))
+          )
+    )
+
 
     chart.getDefaultAxisX()
       .setTitle('milliseconds')
       .setInterval(0, 2500)
       .setScrollStrategy(AxisScrollStrategies.progressive)
+      .setTickStrategy(
+        // Base TickStrategy to modify
+        AxisTickStrategies.Numeric,
+        // Modify the TickStrategy through a mutator
+        (tickStrategy) => tickStrategy
+            // Use custom grid stroke for the Major Ticks.
+            .setMajorTickStyle(tickStyle => tickStyle
+                .setGridStrokeStyle(new SolidLine({
+                  thickness: 3,
+                  fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
+                }))
+            )
+            .setMinorTickStyle(tickStyle => tickStyle
+              .setGridStrokeStyle(new SolidLine({
+                thickness: 2,
+                fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
+              }))
+          )
+      )
 
     var channels = [];
 
@@ -105,7 +152,7 @@ export class MedicalViewComponent implements OnInit {
       .setSamplingFrequency(1)
       .setInputData(this.temp)
       .generate()
-      .setStreamBatchSize(10)
+      .setStreamBatchSize(3)
       .setStreamInterval(10)
       .setStreamRepeat(false)
       .toStream()

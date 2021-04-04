@@ -12,7 +12,8 @@ exports.create = (req, res) => {
             age: req.body.age,
             gender: req.body.gender,
             doctor: req.body.doctor,
-            medicals: req.body.medicals
+            medicals: req.body.medicals,
+            username: req.body.username
         });
         patient.save((err, patient) => {
             if (err) return res.status(500).send(err);
