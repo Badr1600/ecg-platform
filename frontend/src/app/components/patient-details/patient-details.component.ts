@@ -3,6 +3,7 @@ import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { MedicalsService } from 'src/app/_services/medicals.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
 
@@ -12,6 +13,9 @@ import { AuthService } from 'src/app/_services/auth.service';
   styleUrls: ['./patient-details.component.css']
 })
 export class PatientDetailsComponent implements OnInit {
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   currentPatient = null;
   currentDoctor = null;
   currentMedical = null;
@@ -37,14 +41,35 @@ export class PatientDetailsComponent implements OnInit {
     private doctorService: DoctorsService,
     private medicalService: MedicalsService,
     private authService: AuthService,
+    private tokenStorageService: TokenStorageService,
     private route: ActivatedRoute,
     private router: Router) { }
 
   ngOnInit(): void {
-    this.message = '';
-    this.getPatient(this.route.snapshot.paramMap.get('id'));
-    this.retrieveDoctors();
-    this.retrieveMedicals(this.route.snapshot.paramMap.get('id'));
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+      this.username = user.username;
+
+      if ((this.roles.includes('ROLE_ADMIN')) || (this.roles.includes('ROLE_HOSPITAL'))) {
+        this.message = '';
+        this.getPatient(this.route.snapshot.paramMap.get('id'));
+        this.retrieveDoctors();
+        this.retrieveMedicals(this.route.snapshot.paramMap.get('id'));
+      } else {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      }
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
+
   }
 
   retrieveDoctors(): void {

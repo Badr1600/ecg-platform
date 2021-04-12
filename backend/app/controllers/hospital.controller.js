@@ -51,7 +51,7 @@ exports.findAll = (req, res) => {
         });
 };
 
-exports.findOne = (req, res) => {
+exports.findById = (req, res) => {
     const id = req.params.id;
 
     Hospital.findById(id)
@@ -64,6 +64,22 @@ exports.findOne = (req, res) => {
             res
                 .status(500)
                 .send({ message: "Error retrieving hospital with id=" + id });
+        });
+};
+
+exports.findByUsername = (req, res) => {
+    const username = req.params.username;
+
+    Hospital.findOne({ username: username })
+        .then(data => {
+            if (!data)
+                res.status(404).send({ message: "No hospital found with username " + username });
+            else res.send(data);
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({ message: "Error retrieving hospital with username=" + username });
         });
 };
 

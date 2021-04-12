@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
       this.isLoggedIn = true;
       this.roles = this.tokenStorage.getUser().roles;
     }
-  }
+  } 
 
   onSubmit(): void {
     this.authService.login(this.form).subscribe(

@@ -3,7 +3,7 @@ import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { MedicalsService } from 'src/app/_services/medicals.service';
-import { RecordsService } from 'src/app/_services/records.service';;
+import { RecordsService } from 'src/app/_services/records.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({

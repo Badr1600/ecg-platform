@@ -4,17 +4,20 @@ import { Router, NavigationEnd } from '@angular/router';
 
 import { IconSetService } from '@coreui/icons-angular';
 import { freeSet } from '@coreui/icons';
-import { navItems } from './_nav';
-
+import { adminNavItems } from './_nav';
+import { hospitalNavItems } from './_nav';
+import { doctorNavItems } from './_nav';
+import { patientNavItems } from './_nav';
 
 @Component({
   selector: 'app-root', //selector: 'app-root',
   templateUrl: './app.component.html', //templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'] //styleUrls: ['./app.component.css']
 })
+
 export class AppComponent implements OnInit {
   public sidebarMinimized = false;
-  public navItems = navItems;
+  public navItems = null;
   private roles: string[];
   isLoggedIn = false;
   showAdminBoard = false;
@@ -44,8 +47,23 @@ export class AppComponent implements OnInit {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
 
-      this.showAdminBoard = this.roles.includes('ROLE_ADMIN');
-      this.showModeratorBoard = this.roles.includes('ROLE_MODERATOR');
+      if (this.roles.includes('ROLE_ADMIN')) {
+        this.showAdminBoard = true;
+        this.navItems = adminNavItems;
+      }
+
+      if (this.roles.includes('ROLE_HOSPITAL')) {
+        this.navItems = hospitalNavItems;
+      }
+
+      if (this.roles.includes('ROLE_DOCTOR')) {
+        this.navItems = doctorNavItems;
+      }
+
+      if (this.roles.includes('ROLE_PATIENT')) {
+        this.navItems = patientNavItems;
+      }
+      //this.showModeratorBoard = this.roles.includes('ROLE_HOSPITAL');
 
       this.username = user.username;
     }

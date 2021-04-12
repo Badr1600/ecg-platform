@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { AuthService } from 'src/app/_services/auth.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-add-hospital',
@@ -17,15 +18,38 @@ export class AddHospitalComponent implements OnInit {
     password: '',
     roles: ''
   };
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   submitted = false;
   isValid = true;
 
   constructor(
     private authService: AuthService,
     private router: Router,
+    private tokenStorageService: TokenStorageService,
     private hospitalService: HospitalsService) { }
 
   ngOnInit(): void {
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+
+      if (!this.roles.includes('ROLE_ADMIN')) {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      }
+
+      this.username = user.username;
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
   }
 
   registerHospital(): void {

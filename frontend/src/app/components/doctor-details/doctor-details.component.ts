@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { AuthService } from 'src/app/_services/auth.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-doctor-details',
@@ -11,10 +12,14 @@ import { AuthService } from 'src/app/_services/auth.service';
   styleUrls: ['./doctor-details.component.css']
 })
 export class DoctorDetailsComponent implements OnInit {
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   currentHospital = null;
   currentDoctor = null;
   newHospital = null;
   oldHospital = null;
+  isValid = false;
   message = '';
   doctors: any;
   hospitals: any;
@@ -26,14 +31,42 @@ export class DoctorDetailsComponent implements OnInit {
     private patientService: PatientsService,
     private hospitalService: HospitalsService,
     private authService: AuthService,
+    private tokenStorageService: TokenStorageService,
     private route: ActivatedRoute,
     private router: Router) { }
 
   ngOnInit(): void {
-    this.message = '';
-    this.getDoctor(this.route.snapshot.paramMap.get('id'));
-    this.retrieveHospitals();
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+      this.username = user.username;
+
+      if ((this.roles.includes('ROLE_ADMIN')) || (this.roles.includes('ROLE_HOSPITAL'))) {
+        this.message = '';
+        this.getDoctor(this.route.snapshot.paramMap.get('id'));
+        this.retrieveHospitals();
+      } else {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      }
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
   }
+
+  // isUserAccount(): boolean {
+  //   this.getDoctor(this.route.snapshot.paramMap.get('id'));
+    
+  //   if (this.currentDoctor.username == this.username) {
+  //     return true;
+  //   }
+  // }
 
   retrieveHospitals(): void {
     this.hospitalService.getAll()

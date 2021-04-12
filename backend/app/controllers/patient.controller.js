@@ -38,7 +38,7 @@ exports.findAll = (req, res) => {
         });
 };
 
-exports.findOne = (req, res) => {
+exports.findById = (req, res) => {
     const id = req.params.id;
 
     Patient.findById(id)
@@ -54,6 +54,21 @@ exports.findOne = (req, res) => {
         });
 };
 
+exports.findByUsername = (req, res) => {
+    const username = req.params.username;
+
+    Patient.findOne({ username: username })
+        .then(data => {
+            if (!data)
+                res.status(404).send({ message: "No patient found with username " + username });
+            else res.send(data);
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({ message: "Error retrieving patient with username=" + username });
+        });
+};
 
 exports.updateArray = (req, res) => {
     const id = req.params.id;
@@ -92,7 +107,7 @@ exports.update = (req, res) => {
     }
 
     const id = req.params.id;
-    
+
     Patient.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
         .then(data => {
             if (!data) {

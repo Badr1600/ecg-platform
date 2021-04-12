@@ -3,12 +3,14 @@ import { Router } from '@angular/router';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { AuthService } from 'src/app/_services/auth.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-add-doctor',
   templateUrl: './add-doctor.component.html',
   styleUrls: ['./add-doctor.component.css']
 })
+
 export class AddDoctorComponent implements OnInit {
   doctor = {
     title: '',
@@ -19,6 +21,9 @@ export class AddDoctorComponent implements OnInit {
     password: '',
     roles: ''
   };
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   submitted = false;
   patients: any;
   hospitals: any;
@@ -29,11 +34,32 @@ export class AddDoctorComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private tokenStorageService: TokenStorageService,
     private doctorService: DoctorsService,
     private hospitalService: HospitalsService) { }
 
   ngOnInit(): void {
-    this.retrieveHospitals();
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+
+      if (!this.roles.includes('ROLE_ADMIN')) {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      } else {
+        this.retrieveHospitals();
+      }
+
+      this.username = user.username;
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
   }
 
   retrieveHospitals(): void {
@@ -80,7 +106,7 @@ export class AddDoctorComponent implements OnInit {
       .subscribe(
         response => {
           this.submitted = true;
-          
+
           const addDoctor = {
             doctor: response,
             add: true
@@ -93,8 +119,8 @@ export class AddDoctorComponent implements OnInit {
           console.log(error);
         });
 
-        console.log(this.currentHospital.id);
-        this.refresh();
+    console.log(this.currentHospital.id);
+    this.refresh();
   }
 
   refresh(): void {

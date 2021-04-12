@@ -1,0 +1,25 @@
+<div class="animated fadeIn">
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Hospital Info
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label for="name"><strong>Name:</strong></label>  {{ hospital?.title }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name"><strong>Location:</strong></label>  {{ hospital?.location }}
+                    </div>
+                    <div class="form-group">
+                        <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActiveHospital(hospital)"
+                            routerLink="/hospitals/{{ hospital?.id }}">Edit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

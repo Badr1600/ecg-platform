@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -12,6 +13,9 @@ import { HospitalsService } from 'src/app/_services/hospitals.service';
 })
 
 export class PatientListComponent implements OnInit {
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   currentDoctor = null;
   currentHospital = null;
   patients: any;
@@ -25,14 +29,34 @@ export class PatientListComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(
+    private tokenStorageService: TokenStorageService,
     private patientService: PatientsService,
     private hospitalService: HospitalsService,
     private doctorService: DoctorsService,
-    private renderer: Renderer2,
     private router: Router) { }
 
   ngOnInit(): void {
-    this.retrievePatients();
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+
+      if (!this.roles.includes('ROLE_ADMIN')) {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      } else {
+        this.retrievePatients();
+      }
+
+      this.username = user.username;
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
   }
 
   ngOnDestroy(): void {

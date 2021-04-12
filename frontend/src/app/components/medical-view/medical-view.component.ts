@@ -152,7 +152,7 @@ export class MedicalViewComponent implements OnInit {
       .setSamplingFrequency(1)
       .setInputData(this.temp)
       .generate()
-      .setStreamBatchSize(3)
+      .setStreamBatchSize(1)
       .setStreamInterval(10)
       .setStreamRepeat(false)
       .toStream()

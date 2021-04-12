@@ -27,9 +27,17 @@ import { DoctorViewComponent } from './components/doctor-view/doctor-view.compon
 import { AddMedicalComponent } from './components/add-medical/add-medical.component';
 import { MedicalDetailsComponent } from './components/medical-details/medical-details.component';
 import { MedicalViewComponent } from './components/medical-view/medical-view.component';
+import { patientUserInfoComponent } from './views/patientUser/patientInfo/patientInfo.component';
+import { patientUserDoctorComponent } from './views/patientUser/doctorList/doctorList.component';
+import { patientUserHospitalComponent } from './views/patientUser/hospitalList/hospitalList.component';
+import { doctorUserInfoComponent } from './views/doctorUser/doctorInfo/doctorInfo.component';
+import { doctorUserPatientComponent } from './views/doctorUser/patientList/patientList.component';
+import { doctorUserHospitalComponent } from './views/doctorUser/hospitalList/hospitalList.component';
+import { hospitalUserInfoComponent } from './views/hospitalUser/hospitalInfo/hospitalInfo.component';
+import { hospitalUserPatientComponent } from './views/hospitalUser/patientList/patientList.component';
+import { hospitalUserDoctorComponent } from './views/hospitalUser/doctorList/doctorList.component';
+
 import * as Chart from 'chart.js';
-
-
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -56,10 +64,19 @@ const routes: Routes = [
   { path: 'addMedical/:id', component: AddMedicalComponent },
   { path: 'medicals/:id', component: MedicalDetailsComponent },
   { path: 'medicalsView/:id', component: MedicalViewComponent },
+  { path: 'patientUserInfo', component: patientUserInfoComponent },
+  { path: 'patientUserDoctor', component: patientUserDoctorComponent },
+  { path: 'patientUserHospital', component: patientUserHospitalComponent },
+  { path: 'doctorUserInfo', component: doctorUserInfoComponent },
+  { path: 'doctorUserPatients', component: doctorUserPatientComponent },
+  { path: 'doctorUserHospital', component: doctorUserHospitalComponent },
+  { path: 'hospitalUserInfo', component: hospitalUserInfoComponent },
+  { path: 'hospitalUserPatients', component: hospitalUserPatientComponent },
+  { path: 'hospitalUserDoctors', component: hospitalUserDoctorComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }) ],
+  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' }), ],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

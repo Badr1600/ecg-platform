@@ -14,7 +14,7 @@ exports.create = (req, res) => {
             username: req.body.username
         });
         doctor.save((err, doctor) => {
-            if(err) return res.status(500).send(err);
+            if (err) return res.status(500).send(err);
             return res.status(200).json(doctor);
         });
     }
@@ -36,7 +36,7 @@ exports.findAll = (req, res) => {
         });
 };
 
-exports.findOne = (req, res) => {
+exports.findById = (req, res) => {
     const id = req.params.id;
 
     Doctor.findById(id)
@@ -49,6 +49,22 @@ exports.findOne = (req, res) => {
             res
                 .status(500)
                 .send({ message: "Error retrieving doctor with id=" + id });
+        });
+};
+
+exports.findByUsername = (req, res) => {
+    const username = req.params.username;
+
+    Doctor.findOne({ username: username })
+        .then(data => {
+            if (!data)
+                res.status(404).send({ message: "No doctor found with username " + username });
+            else res.send(data);
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({ message: "Error retrieving doctor with username=" + username });
         });
 };
 
@@ -67,7 +83,7 @@ exports.updateArray = (req, res) => {
             { _id: id },
             { $pull: { "patient": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
     }
-    
+
 }
 
 exports.update = (req, res) => {
@@ -118,28 +134,28 @@ exports.delete = (req, res) => {
 
 exports.deleteAll = (req, res) => {
     Doctor.deleteMany({})
-    .then(data => {
-      res.send({
-        message: `${data.deletedCount} Doctors were deleted successfully!`
-      });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all Doctors."
-      });
-    });
+        .then(data => {
+            res.send({
+                message: `${data.deletedCount} Doctors were deleted successfully!`
+            });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while removing all Doctors."
+            });
+        });
 };
 
 exports.findAllPublished = (req, res) => {
     Doctor.find({ published: true })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving Doctors."
-      });
-    });
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving Doctors."
+            });
+        });
 };

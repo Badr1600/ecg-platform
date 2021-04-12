@@ -13,7 +13,10 @@ module.exports = app => {
   router.get("/published", doctors.findAllPublished);
 
   // Retrieve a single doctor with id
-  router.get("/:id", doctors.findOne);
+  router.get("/:id", doctors.findById);
+
+   // Retrieve a single doctor with username
+   router.get("/getByUsername/:username", doctors.findByUsername);
 
   // Update a doctor with id
   router.put("/:id", doctors.update);

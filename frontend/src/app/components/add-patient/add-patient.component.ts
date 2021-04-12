@@ -3,6 +3,7 @@ import { PatientsService } from 'src/app/_services/patients.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
   selector: 'app-add-patient',
@@ -19,6 +20,9 @@ export class AddPatientComponent implements OnInit {
     password: '',
     roles: ''
   };
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
   submitted = false;
   patients: any;
   doctors: any;
@@ -30,11 +34,31 @@ export class AddPatientComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private patientService: PatientsService,
+    private tokenStorageService: TokenStorageService,
     private doctorService: DoctorsService) { }
 
 
   ngOnInit(): void {
-    this.retrieveDoctors();
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+
+      if (!this.roles.includes('ROLE_ADMIN')) {
+        this.router.navigate(['/home'])
+          .then(() => {
+            window.location.reload();
+          });
+      } else {
+        this.retrieveDoctors();
+      }
+      this.username = user.username;
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
   }
 
   retrieveDoctors(): void {
@@ -96,7 +120,7 @@ export class AddPatientComponent implements OnInit {
         error => {
           console.log(error);
         });
-    //this.refresh();
+    this.refresh();
 
   }
 

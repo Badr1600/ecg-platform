@@ -59,6 +59,15 @@ import { DoctorViewComponent } from './components/doctor-view/doctor-view.compon
 import { AddMedicalComponent } from './components/add-medical/add-medical.component';
 import { MedicalDetailsComponent } from './components/medical-details/medical-details.component';
 import { MedicalViewComponent } from './components/medical-view/medical-view.component';
+import { patientUserInfoComponent } from './views/patientUser/patientInfo/patientInfo.component';
+import { patientUserDoctorComponent } from './views/patientUser/doctorList/doctorList.component';
+import { patientUserHospitalComponent } from './views/patientUser/hospitalList/hospitalList.component';
+import { doctorUserInfoComponent } from './views/doctorUser/doctorInfo/doctorInfo.component';
+import { doctorUserPatientComponent } from './views/doctorUser/patientList/patientList.component';
+import { doctorUserHospitalComponent } from './views/doctorUser/hospitalList/hospitalList.component';
+import { hospitalUserInfoComponent } from './views/hospitalUser/hospitalInfo/hospitalInfo.component';
+import { hospitalUserPatientComponent } from './views/hospitalUser/patientList/patientList.component';
+import { hospitalUserDoctorComponent } from './views/hospitalUser/doctorList/doctorList.component';
 import { authInterceptorProviders } from './_helpers/auth.interceptor';
 import { DataTablesModule } from "angular-datatables";
 
@@ -89,7 +98,16 @@ import { DataTablesModule } from "angular-datatables";
     DoctorViewComponent,
     AddMedicalComponent,
     MedicalDetailsComponent,
-    MedicalViewComponent
+    MedicalViewComponent,
+    patientUserInfoComponent,
+    patientUserDoctorComponent,
+    patientUserHospitalComponent,
+    doctorUserInfoComponent,
+    doctorUserPatientComponent,
+    doctorUserHospitalComponent,
+    hospitalUserInfoComponent,
+    hospitalUserPatientComponent,
+    hospitalUserDoctorComponent,
   ],
   imports: [
     BrowserAnimationsModule,

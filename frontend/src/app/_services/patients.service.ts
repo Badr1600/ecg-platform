@@ -13,8 +13,13 @@ export class PatientsService {
   getAll(): Observable<any> {
     return this.http.get(baseUrl);
   }
+
   get(id): Observable<any> {
     return this.http.get(`${baseUrl}/${id}`);
+  }
+  
+  getByUsername(username): Observable<any> {
+    return this.http.get(`${baseUrl}/getByUsername/${username}`);
   }
 
   create(data): Observable<any> {
