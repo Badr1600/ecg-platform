@@ -16,6 +16,8 @@ export class PatientDetailsComponent implements OnInit {
   username: string;
   private roles: string[];
   isLoggedIn = false;
+  patient: any;
+  patientId = null;
   currentPatient = null;
   currentDoctor = null;
   currentMedical = null;
@@ -51,25 +53,59 @@ export class PatientDetailsComponent implements OnInit {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
       this.username = user.username;
-
-      if ((this.roles.includes('ROLE_ADMIN')) || (this.roles.includes('ROLE_HOSPITAL'))) {
-        this.message = '';
-        this.getPatient(this.route.snapshot.paramMap.get('id'));
-        this.retrieveDoctors();
-        this.retrieveMedicals(this.route.snapshot.paramMap.get('id'));
-      } else {
-        this.router.navigate(['/home'])
-          .then(() => {
-            window.location.reload();
-          });
-      }
+      this.authorizeLogin(this.username);
     } else {
       this.router.navigate(['/login'])
         .then(() => {
           window.location.reload();
         });
     }
+  }
 
+  authorizeLogin(username): void {
+    this.patientId = this.route.snapshot.paramMap.get('id');
+    this.retrievePatient(this.patientId);
+    if ((this.roles.includes('ROLE_ADMIN'))) {
+      this.message = '';
+      this.getPatient(this.patientId);
+      this.retrieveDoctors();
+      this.retrieveMedicals(this.patientId);
+    } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
+      this.hospitalService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.patient.hospital) {
+              this.message = '';
+              this.getPatient(this.patientId);
+              this.retrieveDoctors();
+              this.retrieveMedicals(this.patientId);
+            }
+          }
+        )
+    } else if ((this.roles.includes('ROLE_DOCTOR'))) {
+      this.doctorService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.patient.doctor) {
+              this.message = '';
+              this.getPatient(this.patientId);
+              this.retrieveDoctors();
+              this.retrieveMedicals(this.patientId);
+            }
+          }
+        )
+    }
+  }
+
+  retrievePatient(id): void {
+    this.patientService.get(id)
+      .subscribe(
+        data => {
+          this.patient = data;
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   retrieveDoctors(): void {
@@ -218,16 +254,15 @@ export class PatientDetailsComponent implements OnInit {
           });
 
           const hospitalRemove = {
-            patient: this.currentPatient.id,
+            patient: [this.currentPatient.id],
             deletePatient: true
           }
 
           this.hospitalService.updateArrayPatient(this.oldHospital.id, hospitalRemove).subscribe(content => {
           });
 
-
           const hospitalAdd = {
-            patient: this.currentPatient.id,
+            patient: [this.currentPatient.id],
             addPatient: true
           }
 

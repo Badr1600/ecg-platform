@@ -1,10 +1,12 @@
-import { Component, OnInit, Input, AfterViewInit, OnChanges, OnDestroy } from '@angular/core';
-import { lightningChart, ChartXY, Point, Axis, NumericTickStrategy, emptyTick } from '@arction/lcjs';
+import { Component, OnInit, Input } from '@angular/core';
+import { lightningChart, ChartXY, Point } from '@arction/lcjs';
 import { MedicalsService } from 'src/app/_services/medicals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
+import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { RecordsService } from 'src/app/_services/records.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TokenStorageService } from '../../_services/token-storage.service';
 import { parse } from "papaparse";
 
 const lcjs = require('@arction/lcjs')
@@ -15,10 +17,7 @@ const {
   SolidLine,
   SolidFill,
   ColorHEX,
-  ColorRGBA,
   AutoCursorModes,
-  VisibleTicks,
-  emptyLine,
   AxisTickStrategies,
 } = lcjs
 
@@ -30,6 +29,11 @@ const {
 })
 
 export class MedicalViewComponent implements OnInit {
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
+  medical: any;
+  medicalId = null;
   chart: ChartXY;
   chartId: number;
   medicals: any;
@@ -52,20 +56,88 @@ export class MedicalViewComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+    
   }
 
   constructor(
     private medicalService: MedicalsService,
-    private hospitalService: HospitalsService,
     private patientService: PatientsService,
+    private doctorService: DoctorsService,
+    private hospitalService: HospitalsService,
     private recordsService: RecordsService,
-    private route: ActivatedRoute) { }
+    private tokenStorageService: TokenStorageService,
+    private route: ActivatedRoute,
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.getMedical(this.route.snapshot.paramMap.get('id'));
-    this.retrieveHospitals(this.route.snapshot.paramMap.get('id'));
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+      this.username = user.username;
+      this.authorizeLogin(this.username);
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
+  }
 
+  authorizeLogin(username): void {
+    this.medicalId = this.route.snapshot.paramMap.get('id');
+    this.retrieveMedical(this.medicalId);
+    if ((this.roles.includes('ROLE_ADMIN'))) {
+      this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+      this.getMedical(this.medicalId);
+      this.retrieveHospitals(this.medicalId);
+    } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
+      this.hospitalService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.patients.includes(this.medical.patient[0])) {
+              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.getMedical(this.medicalId);
+              this.retrieveHospitals(this.medicalId);
+            }
+          }
+        )
+    } else if ((this.roles.includes('ROLE_DOCTOR'))) {
+      this.doctorService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.patient.includes(this.medical.patient[0])) {
+              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.getMedical(this.medicalId);
+              this.retrieveHospitals(this.medicalId);
+            }
+          }
+        )
+    } else if ((this.roles.includes('ROLE_PATIENT'))) {
+      this.patientService.getByUsername(username)
+        .subscribe(
+          data => {
+            console.log(this.medical.id);
+            if (data.medicals.includes(this.medical.id)) {
+              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.getMedical(this.medicalId);
+              this.retrieveHospitals(this.medicalId);
+            }
+          }
+        )
+    }
+    
+  }
+
+  retrieveMedical(id): void {
+    this.medicalService.get(id)
+      .subscribe(
+        data => {
+          this.medical = data;
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   isValidCSVFile(file: any) {
@@ -98,20 +170,20 @@ export class MedicalViewComponent implements OnInit {
         AxisTickStrategies.Numeric,
         // Modify the TickStrategy through a mutator
         (tickStrategy) => tickStrategy
-            // Use custom grid stroke for the Major Ticks.
-            .setMajorTickStyle(tickStyle => tickStyle
-                .setGridStrokeStyle(new SolidLine({
-                  thickness: 3,
-                  fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
-                }))
-            )
-            .setMinorTickStyle(tickStyle => tickStyle
-              .setGridStrokeStyle(new SolidLine({
-                thickness: 2,
-                fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
-              }))
+          // Use custom grid stroke for the Major Ticks.
+          .setMajorTickStyle(tickStyle => tickStyle
+            .setGridStrokeStyle(new SolidLine({
+              thickness: 3,
+              fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
+            }))
           )
-    )
+          .setMinorTickStyle(tickStyle => tickStyle
+            .setGridStrokeStyle(new SolidLine({
+              thickness: 2,
+              fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
+            }))
+          )
+      )
 
 
     chart.getDefaultAxisX()
@@ -123,18 +195,18 @@ export class MedicalViewComponent implements OnInit {
         AxisTickStrategies.Numeric,
         // Modify the TickStrategy through a mutator
         (tickStrategy) => tickStrategy
-            // Use custom grid stroke for the Major Ticks.
-            .setMajorTickStyle(tickStyle => tickStyle
-                .setGridStrokeStyle(new SolidLine({
-                  thickness: 3,
-                  fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
-                }))
-            )
-            .setMinorTickStyle(tickStyle => tickStyle
-              .setGridStrokeStyle(new SolidLine({
-                thickness: 2,
-                fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
-              }))
+          // Use custom grid stroke for the Major Ticks.
+          .setMajorTickStyle(tickStyle => tickStyle
+            .setGridStrokeStyle(new SolidLine({
+              thickness: 3,
+              fillStyle: new SolidFill({ color: ColorHEX('#f49ea5') })
+            }))
+          )
+          .setMinorTickStyle(tickStyle => tickStyle
+            .setGridStrokeStyle(new SolidLine({
+              thickness: 2,
+              fillStyle: new SolidFill({ color: ColorHEX('#F0DBD9') })
+            }))
           )
       )
 
@@ -173,7 +245,6 @@ export class MedicalViewComponent implements OnInit {
           this.currentMedical = data;
           this.recordsService.findCSV(this.patient)
             .subscribe(results => {
-              console.log(results);
               var length = results[0].length;
               results.forEach(element => {
                 this.temp.push(element);

@@ -41,9 +41,9 @@ export class patientUserInfoComponent implements OnInit {
     if (this.isLoggedIn) {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
+      this.username = user.username;
 
       if (this.roles.includes('ROLE_PATIENT')) {
-        this.username = user.username;
         this.retrievePatient();
       } else {
         this.router.navigate(['/home'])

@@ -112,11 +112,12 @@ exports.updateArrayPatient = (req, res) => {
     }
 
     if (req.body.deletePatient == true) {
-        Hospital.findByIdAndUpdate(
-            { _id: id },
-            { $pull: { "patients": patients } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+        for (var i = 0; i < patients.length; i++) {
+            Hospital.findByIdAndUpdate(
+                { _id: id },
+                { $pull: { "patients": patients[i] } }, { new: true, upsert: true, useFindAndModify: false }).exec();
+        }
     }
-
 }
 
 exports.update = (req, res) => {

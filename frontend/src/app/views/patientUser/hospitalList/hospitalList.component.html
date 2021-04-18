@@ -12,20 +12,15 @@
                             <tr>
                                 <th>Title</th>
                                 <th>Location</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let hospital of hospitals">
                                 <td>{{ hospital.title }}</td>
                                 <td>{{ hospital.location }}</td>
-                                <td>
-                                    <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActiveHospital(hospital)" routerLink="/hospitalsView/{{ hospital.id }}">View</button>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
-
                     <button class="m-3 btn btn-sm btn-danger" (click)="removeAllHospitals()">
                         Remove All
                     </button>

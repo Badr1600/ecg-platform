@@ -13,6 +13,8 @@ export class HospitalDetailsComponent implements OnInit {
   username: string;
   private roles: string[];
   isLoggedIn = false;
+  hospital: any;
+  hospitalId = null;
   currentHospital = null;
   message = '';
 
@@ -29,22 +31,43 @@ export class HospitalDetailsComponent implements OnInit {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
       this.username = user.username;
-
-      if ((this.roles.includes('ROLE_ADMIN')) || (this.roles.includes('ROLE_HOSPITAL'))) {
-        this.message = '';
-        this.getHospital(this.route.snapshot.paramMap.get('id'));
-      } else {
-        this.router.navigate(['/home'])
-          .then(() => {
-            window.location.reload();
-          });
-      }
+      this.authorizeLogin(this.username);
     } else {
       this.router.navigate(['/login'])
         .then(() => {
           window.location.reload();
         });
-      }
+    }
+  }
+  
+  authorizeLogin(username): void {
+    this.hospitalId = this.route.snapshot.paramMap.get('id');
+    this.retrieveHospital(this.hospitalId);
+    if ((this.roles.includes('ROLE_ADMIN'))) {
+      this.message = '';
+      this.getHospital(this.hospitalId);
+    } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
+      this.hospitalService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.hospital.id) {
+              this.message = '';
+              this.getHospital(this.hospitalId);
+            }
+          }
+        )
+    }
+  }
+
+  retrieveHospital(id): void {
+    this.hospitalService.get(id)
+      .subscribe(
+        data => {
+          this.hospital = data;
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   getHospital(id): void {
@@ -52,7 +75,6 @@ export class HospitalDetailsComponent implements OnInit {
       .subscribe(
         data => {
           this.currentHospital = data;
-          console.log(data);
         },
         error => {
           console.log(error);

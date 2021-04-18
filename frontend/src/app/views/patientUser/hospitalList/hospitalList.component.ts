@@ -81,8 +81,6 @@ export class patientUserHospitalComponent implements OnInit {
           console.log(error);
         });
 
-
-
     this.dtOptions = {
       pagingType: 'full_numbers',
     };

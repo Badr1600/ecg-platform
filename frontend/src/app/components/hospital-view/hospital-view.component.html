@@ -2,36 +2,42 @@
     <br />
     <div class="card">
         <div class="card-header">
-            <i class="icon-drop"></i> Doctors
+            <i class="icon-drop"></i> Hospital Info
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-4">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Search by title" [(ngModel)]="title" />
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
-                                Search
-                            </button>
+                    <div *ngIf="currentHospital">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Search by title" [(ngModel)]="title" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" (click)="searchTitle()">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="title"><strong>Doctors:</strong></label>
+                            <ul class="list-group">
+                                <li class="list-group-item" *ngFor="let doctor of doctors; let i = index"
+                                    [class.active]="i == currentIndex" (click)="setActiveDoctor(doctor, i)" (click)="retrievePatients(currentDoctor.id)">
+                                    {{ doctor.title }}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group" onload="retrievePatients(currentDoctor.id)">
+                            <label for="title" ><strong>Patients:</strong></label>
+                            <ul class="list-group" >
+                                <li  class="list-group-item" *ngFor="let patient of patients; let i = index">
+                                    {{ patient.title }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="title"><strong>Doctors:</strong></label>
-                        <ul class="list-group">
-                            <li class="list-group-item" *ngFor="let doctor of doctors; let i = index"
-                                [class.active]="i == currentIndex" (click)="setActiveDoctor(doctor, i)" (click)="retrievePatients(currentDoctor.id)">
-                                {{ doctor.title }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="form-group" onload="retrievePatients(currentDoctor.id)">
-                        <label for="title" ><strong>Patients:</strong></label>
-                        <ul class="list-group" >
-                            <li  class="list-group-item" *ngFor="let patient of patients; let i = index">
-                                {{ patient.title }}
-                            </li>
-                        </ul>
+                    <div *ngIf="!currentHospital">
+                        <br />
+                        <p>You do not have permissions to view this hospital or hospital does not exist.</p>
                     </div>
                 </div>
             </div>

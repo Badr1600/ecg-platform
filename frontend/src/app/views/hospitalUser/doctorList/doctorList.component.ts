@@ -51,7 +51,6 @@ export class hospitalUserDoctorComponent implements OnInit {
           window.location.reload();
         });
     }
-
   }
 
   ngOnDestroy(): void {

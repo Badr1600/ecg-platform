@@ -67,7 +67,6 @@ export class doctorUserHospitalComponent implements OnInit {
             .subscribe(
               data => {
                 data.forEach(element => {
-                  console.log(this.doctor.hospital);
                   if (this.doctor.hospital.includes(element.id)) {
                     this.hospitals.push(element);
                   }

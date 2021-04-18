@@ -1,34 +1,45 @@
-<div style="width: 400px; margin: auto;">
-    <div *ngIf="currentMedical" class="edit-form">
-        <h4>Medical</h4>
-        <form>
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" class="form-control" id="title" [(ngModel)]="currentMedical.title" name="title" />
+<div class="animated fadeIn">
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Medical Info
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-4">
+                    <div *ngIf="currentMedical" class="edit-form">
+                        <form>
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" [(ngModel)]="currentMedical.title" name="title" />
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Type</label>
+                                <input type="text" class="form-control" id="description" [(ngModel)]="currentMedical.type"
+                                    name="description" />
+                            </div>
+                
+                            <div class="form-group">
+                                <label for="title"><strong>Patient:</strong></label> {{ currentPatient?.title }}
+                            </div>
+                        </form>
+                
+                        <button class="badge badge-danger mr-2" (click)="deleteMedical()">
+                            Delete
+                        </button>
+                
+                        <button type="submit" class="badge badge-success" (click)="updateMedical()">
+                            Update
+                        </button>
+                        <p>{{ message }}</p>
+                    </div>
+                
+                    <div *ngIf="!currentMedical">
+                        <br />
+                        <p>You do not have permissions to edit this medical record or medical record does not exist.</p>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="description">Type</label>
-                <input type="text" class="form-control" id="description" [(ngModel)]="currentMedical.type"
-                    name="description" />
-            </div>
-
-            <div class="form-group">
-                <label for="title"><strong>Patient:</strong></label> {{ currentPatient?.title }}
-            </div>
-        </form>
-
-        <button class="badge badge-danger mr-2" (click)="deleteMedical()">
-            Delete
-        </button>
-
-        <button type="submit" class="badge badge-success" (click)="updateMedical()">
-            Update
-        </button>
-        <p>{{ message }}</p>
-    </div>
-
-    <div *ngIf="!currentMedical">
-        <br />
-        <p>Cannot access this Medical...</p>
+        </div>
     </div>
 </div>

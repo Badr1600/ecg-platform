@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DoctorsService } from 'src/app/_services/doctors.service';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
 import { AuthService } from 'src/app/_services/auth.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-doctor-details',
@@ -15,6 +15,8 @@ export class DoctorDetailsComponent implements OnInit {
   username: string;
   private roles: string[];
   isLoggedIn = false;
+  doctor: any;
+  doctorId = null;
   currentHospital = null;
   currentDoctor = null;
   newHospital = null;
@@ -27,8 +29,8 @@ export class DoctorDetailsComponent implements OnInit {
   title = '';
 
   constructor(
-    private doctorService: DoctorsService,
     private patientService: PatientsService,
+    private doctorService: DoctorsService,
     private hospitalService: HospitalsService,
     private authService: AuthService,
     private tokenStorageService: TokenStorageService,
@@ -41,17 +43,7 @@ export class DoctorDetailsComponent implements OnInit {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
       this.username = user.username;
-
-      if ((this.roles.includes('ROLE_ADMIN')) || (this.roles.includes('ROLE_HOSPITAL'))) {
-        this.message = '';
-        this.getDoctor(this.route.snapshot.paramMap.get('id'));
-        this.retrieveHospitals();
-      } else {
-        this.router.navigate(['/home'])
-          .then(() => {
-            window.location.reload();
-          });
-      }
+      this.authorizeLogin(this.username);
     } else {
       this.router.navigate(['/login'])
         .then(() => {
@@ -60,13 +52,48 @@ export class DoctorDetailsComponent implements OnInit {
     }
   }
 
-  // isUserAccount(): boolean {
-  //   this.getDoctor(this.route.snapshot.paramMap.get('id'));
-    
-  //   if (this.currentDoctor.username == this.username) {
-  //     return true;
-  //   }
-  // }
+  authorizeLogin(username): void {
+    this.doctorId = this.route.snapshot.paramMap.get('id');
+    this.retrieveDoctor(this.doctorId);
+    if ((this.roles.includes('ROLE_ADMIN'))) {
+      this.message = '';
+      this.getDoctor(this.doctorId);
+      this.retrieveHospitals();
+    } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
+      this.hospitalService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.doctor.hospital) {
+              this.message = '';
+              this.getDoctor(this.doctorId);
+              this.retrieveHospitals();
+            }
+          }
+        )
+    } else if ((this.roles.includes('ROLE_DOCTOR'))) {
+      this.doctorService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.doctor.id) {
+              this.message = '';
+              this.getDoctor(this.doctorId);
+              this.retrieveHospitals();
+            }
+          }
+        )
+    }
+  }
+
+  retrieveDoctor(id): void {
+    this.doctorService.get(id)
+      .subscribe(
+        data => {
+          this.doctor = data;
+        },
+        error => {
+          console.log(error);
+        });
+  }
 
   retrieveHospitals(): void {
     this.hospitalService.getAll()
@@ -139,41 +166,48 @@ export class DoctorDetailsComponent implements OnInit {
             });
           }
 
-          const addDoctor = {
-            doctor: this.currentDoctor.id,
-            addDoctor: true,
-            deleteDoctor: false
+          if  ((this.oldHospital.id != this.newHospital.id))  {
+            const addDoctor = {
+              doctor: this.currentDoctor.id,
+              addDoctor: true
+            }
+  
+            this.hospitalService.updateArrayDoctor(this.newHospital.id, addDoctor).subscribe(response => {
+            });
+  
+            const removeDoctor = {
+              doctor: this.currentDoctor.id,
+              deleteDoctor: true
+            }
+            this.hospitalService.updateArrayDoctor(this.oldHospital.id, removeDoctor).subscribe(response => {
+            });
           }
+          
+          if ((this.oldHospital.id != this.newHospital.id) && (this.newHospital.patients != this.currentDoctor.patient)) {
+            const removePatients = {
+              patient: this.currentDoctor.patient,
+              deletePatient: true
+            }
 
-          this.hospitalService.updateArrayDoctor(this.newHospital.id, addDoctor).subscribe(response => {
-          });
+            this.hospitalService.updateArrayPatient(this.oldHospital.id, removePatients).subscribe(response => {
+            });
 
-          const removeDoctor = {
-            doctor: this.currentDoctor.id,
-            deleteDoctor: true,
-            addDoctor: false
+            const addPatients = {
+              patient: this.currentDoctor.patient,
+              addPatient: true
+            }
+
+            this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
+            });
+          } else if (this.newHospital.patients.includes(this.currentDoctor.patient)) {
+            const addPatients = {
+              patient: this.currentDoctor.patient,
+              addPatient: true
+            }
+
+            this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
+            });
           }
-
-          this.hospitalService.updateArrayDoctor(this.oldHospital.id, removeDoctor).subscribe(response => {
-          });
-
-          const addPatients = {
-            patient: this.currentDoctor.patient,
-            addPatient: true,
-            deletePatient: false
-          }
-
-          this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
-          });
-
-          const removePatients = {
-            patient: this.currentDoctor.patient,
-            deletePatient: true,
-            addPatient: false
-          }
-
-          this.hospitalService.updateArrayPatient(this.oldHospital.id, removePatients).subscribe(response => {
-          });
 
           this.refresh();
         },

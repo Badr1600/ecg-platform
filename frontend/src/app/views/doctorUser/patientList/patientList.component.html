@@ -27,6 +27,7 @@
                                 <td>{{ patient.hospital }}</td>
                                 <td>
                                     <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActivePatient(patient)" routerLink="/patientsView/{{ patient.id }}">View</button>
+                                    <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActivePatient(patient)" routerLink="/patients/{{ patient.id }}">Edit</button>
                                 </td>
                             </tr>
                         </tbody>

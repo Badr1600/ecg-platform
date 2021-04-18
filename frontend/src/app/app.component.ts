@@ -50,6 +50,7 @@ export class AppComponent implements OnInit {
       if (this.roles.includes('ROLE_ADMIN')) {
         this.showAdminBoard = true;
         this.navItems = adminNavItems;
+        console.log(this.isLoggedIn);
       }
 
       if (this.roles.includes('ROLE_HOSPITAL')) {

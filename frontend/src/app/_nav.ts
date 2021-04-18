@@ -141,7 +141,7 @@ export const hospitalNavItems: INavData[] =
     },
   ];
 
-  export const doctorNavItems: INavData[] =
+export const doctorNavItems: INavData[] =
   [
     {
       title: true,
@@ -168,7 +168,7 @@ export const hospitalNavItems: INavData[] =
     },
   ];
 
-  export const patientNavItems: INavData[] =
+export const patientNavItems: INavData[] =
   [
     {
       title: true,
@@ -184,12 +184,12 @@ export const hospitalNavItems: INavData[] =
       name: 'View'
     },
     {
-      name: 'Doctors',
+      name: 'Doctor',
       url: 'patientUserDoctor',
       icon: 'icon-pencil'
     },
     {
-      name: 'Hospitals',
+      name: 'Hospital',
       url: 'patientUserHospital',
       icon: 'icon-pencil'
     },

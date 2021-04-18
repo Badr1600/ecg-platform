@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { PatientsService } from 'src/app/_services/patients.service';
+import { TokenStorageService } from '../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
@@ -11,7 +12,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 
 export class HospitalViewComponent implements OnInit {
-
+  username: string;
+  private roles: string[];
+  isLoggedIn = false;
+  hospital: any;
+  hospitalId = null;
   hospitals: any;
   doctors: any;
   patients: any;
@@ -20,15 +25,66 @@ export class HospitalViewComponent implements OnInit {
   currentPatient = null;
   currentIndex = -1;
   title = '';
+  message = '';
 
   constructor(
     private hospitalService: HospitalsService,
     private doctorService: DoctorsService,
     private patientService: PatientsService,
-    private route: ActivatedRoute) { }
+    private tokenStorageService: TokenStorageService,
+    private route: ActivatedRoute,
+    private router: Router) { }
 
   ngOnInit(): void {
-    this.retrieveDoctors(this.route.snapshot.paramMap.get('id'));
+    this.isLoggedIn = !!this.tokenStorageService.getToken();
+    if (this.isLoggedIn) {
+      const user = this.tokenStorageService.getUser();
+      this.roles = user.roles;
+      this.username = user.username;
+      this.authorizeLogin(this.username);
+    } else {
+      this.router.navigate(['/login'])
+        .then(() => {
+          window.location.reload();
+        });
+    }
+  }
+
+  authorizeLogin(username): void {
+    this.hospitalId = this.route.snapshot.paramMap.get('id');
+    this.retrieveHospital(this.hospitalId);
+    if ((this.roles.includes('ROLE_ADMIN'))) {
+      this.retrieveDoctors(this.hospitalId);
+    } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
+      this.hospitalService.getByUsername(username)
+        .subscribe(
+          data => {
+            if (data.id == this.hospital.id) {
+              this.retrieveDoctors(this.hospitalId);
+            }
+          }
+        )
+    } else if ((this.roles.includes('ROLE_DOCTOR'))) {
+      this.doctorService.getByUsername(username)
+      .subscribe(
+        data => {
+          if (this.hospital.doctors.includes(data.id)) {
+            this.retrieveDoctors(this.hospitalId);
+          }
+        }
+      )
+    }
+  }
+
+  retrieveHospital(id): void {
+    this.hospitalService.get(id)
+      .subscribe(
+        data => {
+          this.hospital = data;
+        },
+        error => {
+          console.log(error);
+        });
   }
 
   retrieveDoctors(id): void {
@@ -36,14 +92,11 @@ export class HospitalViewComponent implements OnInit {
     this.hospitalService.get(id)
       .subscribe(
         data => {
-          console.log(data);
           this.currentHospital = data;
           this.doctorService.getAll()
           .subscribe(
             results => {
-              console.log(results);
               results.forEach(element => {
-                console.log(element.id);
                 if (element.hospital == data.id) {
                   temp.push(element);
                 }
@@ -67,9 +120,7 @@ export class HospitalViewComponent implements OnInit {
           .subscribe(
             results => { 
               results.forEach(element => {
-                console.log(element);
                 if (element.doctor == data.id) {
-                  
                   temp.push(element);
                 }
                 this.patients = temp;
