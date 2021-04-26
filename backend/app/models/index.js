@@ -14,6 +14,7 @@ db.patients = require("./patients.model.js")(mongoose);
 db.doctors = require("./doctors.model.js")(mongoose);
 db.hospitals = require("./hospitals.model.js")(mongoose);
 db.medicals = require("./medicals.model.js")(mongoose);
+db.requests = require("./requests.model.js")(mongoose);
 
 db.ROLES = ["user", "admin", "hospital", "doctor", "patient"];
 

@@ -40,14 +40,14 @@ import { hospitalUserDoctorComponent } from './views/hospitalUser/doctorList/doc
 import * as Chart from 'chart.js';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'home', component: HomeComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'user', component: BoardUserComponent },
   { path: 'mod', component: BoardModeratorComponent },
   { path: 'admin', component: BoardAdminComponent },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '', redirectTo: 'patients', pathMatch: 'full' },
   { path: 'patients', component: PatientListComponent },
   { path: 'patients/:id', component: PatientDetailsComponent },

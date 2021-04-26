@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { PatientsService } from 'src/app/_services/patients.service';
+import { RequestsService } from 'src/app/_services/requests.service';
 import { AuthService } from 'src/app/_services/auth.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -32,6 +33,7 @@ export class DoctorDetailsComponent implements OnInit {
     private patientService: PatientsService,
     private doctorService: DoctorsService,
     private hospitalService: HospitalsService,
+    private requestService: RequestsService,
     private authService: AuthService,
     private tokenStorageService: TokenStorageService,
     private route: ActivatedRoute,
@@ -142,6 +144,18 @@ export class DoctorDetailsComponent implements OnInit {
   }
 
   updateDoctor(): void {
+    const data = {
+      title: this.currentDoctor.title,
+      age: this.currentDoctor.age,
+      gender: this.currentDoctor.gender
+    }
+
+    this.doctorService.update(this.currentDoctor.id, data).subscribe();
+
+    this.message = 'Doctor information updated sucessfully.';
+  }
+
+  transferDoctor(): void {
     this.oldHospital = this.currentHospital;
     if (this.newHospital != null) {
       this.currentDoctor.hospital = [];
@@ -149,70 +163,36 @@ export class DoctorDetailsComponent implements OnInit {
       this.currentHospital = this.newHospital;
     }
 
-    this.doctorService.update(this.currentDoctor.id, this.currentDoctor)
+    this.requestService.getAll()
       .subscribe(
-        response => {
-          this.message = 'The doctor was updated successfully!';
+        data => {
+          var duplicate = false;
 
-          const setHospital = {
-            hospital: this.newHospital
+          if (data) {
+            const request = {
+              title: this.currentDoctor.title,
+              requestedBy: this.username,
+              requestType: "Transfer",
+              doctorId: this.currentDoctor.id,
+              currentHospital: this.oldHospital.id,
+              newHospital: this.newHospital.id,
+              status: "Pending"
+            }
+            data.forEach(element => {
+              if ((element.doctorId == this.currentDoctor.id) && (element.status == "Pending")) {
+                duplicate = true;
+                this.message = "There is already an active request for this doctor."
+              }
+            });
+
+            if (!duplicate) {
+              this.requestService.createDoctorReq(request)
+                .subscribe(
+                  response => {
+                    this.refresh();
+                  });
+            }
           }
-
-          this.doctorService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
-          });
-
-          if (this.currentDoctor.patient.length != 0) {
-            this.patientService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
-            });
-          }
-
-          if  ((this.oldHospital.id != this.newHospital.id))  {
-            const addDoctor = {
-              doctor: this.currentDoctor.id,
-              addDoctor: true
-            }
-  
-            this.hospitalService.updateArrayDoctor(this.newHospital.id, addDoctor).subscribe(response => {
-            });
-  
-            const removeDoctor = {
-              doctor: this.currentDoctor.id,
-              deleteDoctor: true
-            }
-            this.hospitalService.updateArrayDoctor(this.oldHospital.id, removeDoctor).subscribe(response => {
-            });
-          }
-          
-          if ((this.oldHospital.id != this.newHospital.id) && (this.newHospital.patients != this.currentDoctor.patient)) {
-            const removePatients = {
-              patient: this.currentDoctor.patient,
-              deletePatient: true
-            }
-
-            this.hospitalService.updateArrayPatient(this.oldHospital.id, removePatients).subscribe(response => {
-            });
-
-            const addPatients = {
-              patient: this.currentDoctor.patient,
-              addPatient: true
-            }
-
-            this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
-            });
-          } else if (this.newHospital.patients.includes(this.currentDoctor.patient)) {
-            const addPatients = {
-              patient: this.currentDoctor.patient,
-              addPatient: true
-            }
-
-            this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
-            });
-          }
-
-          this.refresh();
-        },
-        error => {
-          console.log(error);
         });
   }
 
@@ -224,23 +204,38 @@ export class DoctorDetailsComponent implements OnInit {
   }
 
   deleteDoctor(): void {
-    console.log(this.currentDoctor);
-    this.doctorService.delete(this.currentDoctor.id)
+    this.oldHospital = this.currentHospital;
+    this.requestService.getAll()
       .subscribe(
-        response => {
-          console.log(response);
-        },
-        error => {
-          console.log(error);
+        data => {
+          var duplicate = false;
+
+          if (data) {
+            const request = {
+              title: this.currentDoctor.title,
+              requestedBy: this.username,
+              requestType: "Delete",
+              doctorId: this.currentDoctor.id,
+              currentHospital: this.oldHospital.id,
+              newHospital: "",
+              status: "Pending"
+            }
+            data.forEach(element => {
+              if ((element.doctorId == this.currentDoctor.id) && (element.status == "Pending")) {
+                duplicate = true;
+                this.message = "There is already an active request for this doctor."
+              }
+            });
+
+            if (!duplicate) {
+              this.requestService.createDoctorReq(request)
+                .subscribe(
+                  response => {
+                    console.log(response);
+                    this.refresh();
+                  });
+            }
+          }
         });
-    this.authService.delete(this.currentDoctor.username)
-      .subscribe(
-        response => {
-          console.log(response);
-        },
-        error => {
-          console.log(error);
-        });
-    this.refresh();
   }
 }
