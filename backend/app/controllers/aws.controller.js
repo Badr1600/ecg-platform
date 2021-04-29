@@ -115,8 +115,6 @@ exports.create = (req, res) => {
 exports.sendCSV = function(req, res) {
     const dir = './fileprint';
     const s3 = new aws.S3();
-    console.log(req.files);
-    console.log();
 
     aws.config.update({
         accessKeyId: config.aws.accessKey,
