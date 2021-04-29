@@ -131,7 +131,6 @@ export class PatientListComponent implements OnInit {
     this.patientService.deleteAll()
       .subscribe(
         response => {
-          console.log(response);
           this.retrievePatients();
         },
         error => {

@@ -1,0 +1,81 @@
+<div class="card">
+  <div class="card-header">
+      <i class="icon-drop"></i> Pending Patient Requests
+  </div>
+  <div class="card-body" style="height: 100">
+      <div class="row-xl-10">
+          <div class="col-xl-12">
+              <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                  <thead>
+                      <tr>
+                          <th>Title</th>
+                          <th>Request Type</th>
+                          <th>Requested By</th>
+                          <th>Requested At</th>
+                          <th>Current Doctor</th>
+                          <th>New Doctor</th>
+                          <th>Status</th>
+                          <th>Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr *ngFor="let patientRequest of patientRequests">
+                          <td>{{ patientRequest.title }}</td>
+                          <td>{{ patientRequest.requestType }}</td>
+                          <td>{{ patientRequest.requestedBy }}</td>
+                          <td>{{ patientRequest.createdAt }}</td>
+                          <td>{{ patientRequest.doctorName }}</td>
+                          <td>{{ patientRequest.newDoctorName }}</td>
+                          <td>{{ patientRequest.status }}</td>
+                          <td>
+                              <button class="btn-success btn" style="margin-right: 1rem;" (click)="acceptPatientRequest(patientRequest)">Accept</button>
+                              <button class="btn-danger btn" style="margin-right: 1rem;" (click)="denyPatientRequest(patientRequest)">Deny</button>
+                          </td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+</div>
+<div class="card">
+<div class="card-header">
+    <i class="icon-drop"></i> Completed Patient Requests
+</div>
+<div class="card-body" style="height: 100">
+    <div class="row-xl-10">
+        <div class="col-xl-12">
+            <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Request Type</th>
+                        <th>Requested By</th>
+                        <th>Completed By</th>
+                        <th>Completed At</th>
+                        <th>Previous Doctor</th>
+                        <th>New Doctor</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let completedPatientRequest of completedPatientRequests">
+                        <td>{{ completedPatientRequest.title }}</td>
+                        <td>{{ completedPatientRequest.requestType }}</td>
+                        <td>{{ completedPatientRequest.requestedBy }}</td>
+                        <td>{{ completedPatientRequest.completedBy }}</td>
+                        <td>{{ completedPatientRequest.updatedAt }}</td>
+                        <td>{{ completedPatientRequest.doctorName }}</td>
+                        <td>{{ completedPatientRequest.newDoctorName }}</td>
+                        <td>{{ completedPatientRequest.status }}</td>
+                        <td>
+                            <button class="btn-primary btn" style="margin-right: 1rem;">Undo</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>

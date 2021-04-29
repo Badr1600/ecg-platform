@@ -165,7 +165,6 @@ export class PatientDetailsComponent implements OnInit {
     this.currentIndexMedical = index;
     this.currentMedical = medical;
     this.selected = true;
-    console.log(this.currentMedical.title);
   }
 
   setActiveHospital(hospital, index): void {

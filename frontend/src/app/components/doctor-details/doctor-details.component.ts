@@ -231,7 +231,6 @@ export class DoctorDetailsComponent implements OnInit {
               this.requestService.createDoctorReq(request)
                 .subscribe(
                   response => {
-                    console.log(response);
                     this.refresh();
                   });
             }

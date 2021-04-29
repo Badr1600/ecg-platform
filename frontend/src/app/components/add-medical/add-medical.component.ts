@@ -86,7 +86,6 @@ export class AddMedicalComponent implements OnInit {
                 add: true
               }
               this.patientService.updateArray(this.id, data).subscribe(content => {
-                console.log(content);
               });
             });
             

@@ -42,8 +42,8 @@ import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { BoardAdminComponent } from './board-admin/board-admin.component';
-import { BoardModeratorComponent } from './board-moderator/board-moderator.component';
-import { BoardUserComponent } from './board-user/board-user.component';
+import { BoardDoctorComponent } from './board-doctor/board-doctor.component';
+import { BoardHospitalComponent } from './board-hospital/board-hospital.component';
 import { AddPatientComponent } from './components/add-patient/add-patient.component';
 import { AddDoctorComponent } from './components/add-doctor/add-doctor.component';
 import { PatientDetailsComponent } from './components/patient-details/patient-details.component';
@@ -82,8 +82,8 @@ import { DataTablesModule } from "angular-datatables";
     HomeComponent,
     ProfileComponent,
     BoardAdminComponent,
-    BoardModeratorComponent,
-    BoardUserComponent,
+    BoardDoctorComponent,
+    BoardHospitalComponent,
     AddPatientComponent,
     AddDoctorComponent,
     PatientDetailsComponent,

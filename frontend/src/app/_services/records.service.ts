@@ -21,10 +21,6 @@ export class RecordsService {
     return this.http.post(baseUrl, id);
   }
 
-  /*sendCSV(file): Observable<any> {
-    return this.http.put(baseUrl, file);
-  }*/
-
   uploadFile(id, file): void {
     const contentType = file.type;
     const bucket = new S3(

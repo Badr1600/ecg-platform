@@ -35,23 +35,41 @@
                         <div class="form-group">
                             <label for="title"><strong>Hospital: </strong></label> {{ currentHospital?.title }}
                         </div>
-                        <div class="form-group">
-                            <label for="title"><strong>Medical Records:</strong></label>
-                            <ul class="list-group">
-                                <li class="list-group-item" *ngFor="let medical of medicals; let i = index"
-                                    [class.active]="i == currentIndex" (click)="setActiveMedical(medical, i)">
-                                    {{ medical.title }} -- <strong>{{ medical.type }}</strong>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="form-group">
-                            <input type="file" id="file" (change)="fileUpload($event.target.files)">
-                        </div>
                     </div>
                     <div *ngIf="!currentPatient">
                         <br />
                         <p>You do not have permissions to view this patient or patient does not exist.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-drop"></i> Medical Records
+        </div>
+        <div class="card-body" style="height: 100">
+            <div class="row-xl-10">
+                <div class="col-xl-12">
+                    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="row-border hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let medical of medicals">
+                                <td>{{ medical.title }}</td>
+                                <td>{{ medical.type }}</td>
+                                <td>
+                                    <button class="btn-info btn" style="margin-right: 1rem;" (click)="setActiveMedical(medical)" routerLink="/medicalsView/{{ medical.id }}">View</button>
+                                    <button class="btn-success btn" style="margin-right: 1rem;" (click)="setActiveMedical(medical)" routerLink="/medicals/{{ medical.id }}">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

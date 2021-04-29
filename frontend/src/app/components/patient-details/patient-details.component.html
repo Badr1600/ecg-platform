@@ -61,24 +61,27 @@
                             </div>
                         </form>
 
-                        <button class="badge badge-danger mr-3" (click)="deletePatient()">
+                        <button class="btn btn-sm btn-danger btn-ladda ladda-button mr-3" (click)="deletePatient()">
                             Delete
                         </button>
 
-                        <button type="submit" class="badge badge-success mr-1" (click)="updatePatient()">
+                        <button type="submit" class="btn btn-sm btn-success btn-ladda ladda-button mr-1"
+                            (click)="updatePatient()">
                             Update
                         </button>
 
-                        <button type="submit" class="badge badge-success mr-1" (click)="transferPatient()">
+                        <button type="submit" class="btn btn-sm btn-success btn-ladda ladda-button mr-1"
+                            (click)="transferPatient()">
                             Transfer
                         </button>
 
-                        <button type="submit" class="badge badge-success mr-1"
+                        <button type="submit" class="btn btn-sm btn-success btn-ladda ladda-button mr-1"
                             routerLink="/addMedical/{{ currentPatient.id}}">
                             Add Medical Record
                         </button>
 
-                        <button *ngIf="selected" type="submit" class="badge badge-success mr-1"
+                        <button *ngIf="selected" type="submit"
+                            class="btn btn-sm btn-success btn-ladda ladda-button mr-1"
                             routerLink="/medicals/{{ currentMedical.id }}">
                             Edit Medical Record
                         </button>

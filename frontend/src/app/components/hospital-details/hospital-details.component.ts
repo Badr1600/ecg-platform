@@ -85,7 +85,6 @@ export class HospitalDetailsComponent implements OnInit {
     this.hospitalService.update(this.currentHospital.id, this.currentHospital)
       .subscribe(
         response => {
-          console.log(response);
           this.message = 'The hospital was updated successfully!';
         },
         error => {
@@ -104,7 +103,6 @@ export class HospitalDetailsComponent implements OnInit {
     this.hospitalService.delete(this.currentHospital.id)
       .subscribe(
         response => {
-          console.log(response);
         },
         error => {
           console.log(error);
@@ -113,7 +111,6 @@ export class HospitalDetailsComponent implements OnInit {
     this.authService.delete(this.currentHospital.username)
       .subscribe(
         response => {
-          console.log(response);
         },
         error => {
           console.log(error);

@@ -85,7 +85,6 @@ export class HospitalListComponent implements OnInit {
     this.hospitalService.deleteAll()
       .subscribe(
         response => {
-          console.log(response);
           this.retrieveHospitals();
         },
         error => {

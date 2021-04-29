@@ -91,8 +91,6 @@ export class AddPatientComponent implements OnInit {
       roles: ["patient"]
     }
 
-    console.log(register);
-
     this.authService.register(register).subscribe(
       data => {
         console.log(data);

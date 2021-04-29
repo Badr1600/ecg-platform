@@ -117,6 +117,15 @@ export const adminNavItems: INavData[] =
 export const hospitalNavItems: INavData[] =
   [
     {
+      name: 'Hospital Board',
+      url: 'hospital',
+      icon: 'icon-speedometer',
+      badge: {
+        variant: 'info',
+        text: 'NEW'
+      }
+    },
+    {
       title: true,
       name: 'Your Info'
     },
@@ -143,6 +152,15 @@ export const hospitalNavItems: INavData[] =
 
 export const doctorNavItems: INavData[] =
   [
+    {
+      name: 'Doctor Board',
+      url: 'doctor',
+      icon: 'icon-speedometer',
+      badge: {
+        variant: 'info',
+        text: 'NEW'
+      }
+    },
     {
       title: true,
       name: 'Your Info'

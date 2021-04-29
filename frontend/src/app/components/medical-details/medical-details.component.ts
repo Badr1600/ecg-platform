@@ -4,6 +4,7 @@ import { DoctorsService } from 'src/app/_services/doctors.service';
 import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientsService } from 'src/app/_services/patients.service';
+import { RecordsService } from 'src/app/_services/records.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
 
 @Component({
@@ -24,12 +25,14 @@ export class MedicalDetailsComponent implements OnInit {
   patients: any;
   currentIndex = -1;
   title = '';
+  fileToUpload: File = null;
 
   constructor(
     private medicalService: MedicalsService,
     private patientService: PatientsService,
     private doctorService: DoctorsService,
     private hospitalService: HospitalsService,
+    private recordService: RecordsService,
     private tokenStorageService: TokenStorageService,
     private route: ActivatedRoute,
     private router: Router) { }
@@ -88,6 +91,11 @@ export class MedicalDetailsComponent implements OnInit {
     }
   }
 
+  fileUpload(files: FileList) {
+    this.fileToUpload = files.item(0);
+    this.recordService.uploadFile(this.medicalId, this.fileToUpload);
+  }
+
   retrieveMedical(id): void {
     this.medicalService.get(id)
       .subscribe(
@@ -133,7 +141,6 @@ export class MedicalDetailsComponent implements OnInit {
     this.medicalService.update(this.currentMedical.id, this.currentMedical)
       .subscribe(
         response => {
-          console.log(response);
           this.message = 'The medical record was updated successfully!';
         },
         error => {
@@ -154,7 +161,6 @@ export class MedicalDetailsComponent implements OnInit {
                 delete: true
               }
               this.patientService.updateArray(this.currentPatient.id, data).subscribe(content => {
-                console.log(content);
               });
             });
         },

@@ -5,10 +5,10 @@
       <i class="icon-drop"></i> Add Patient
     </div>
     <div class="card-body">
-      <div class="row">
-        <div class="col-4">
-          <div class="submit-form">
-            <form *ngIf="!submitted" name="form" (ngSubmit)="f.form.valid && registerPatient()" #f="ngForm" novalidate>
+      <div class="submit-form">
+        <form *ngIf="!submitted" name="form" (ngSubmit)="f.form.valid && registerPatient()" #f="ngForm" novalidate>
+          <div class="row">
+            <div class="col col-lg-6">
               <div class="form-group">
                 <label for="title">Name</label>
                 <input type="text" class="form-control" name="title" [(ngModel)]="patient.title" required minlength="3"
@@ -37,11 +37,13 @@
                   <option value="Female">Female</option>
                 </select>
               </div>
+            </div>
 
+            <div class="col col-lg-6">
               <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" autocomplete="off" class="form-control" name="username" [(ngModel)]="patient.username"
-                  required minlength="3" maxlength="20" #username="ngModel" />
+                <input type="text" autocomplete="off" class="form-control" name="username"
+                  [(ngModel)]="patient.username" required minlength="3" maxlength="20" #username="ngModel" />
                 <div class="alert-danger" *ngIf="f.submitted && username.invalid">
                   <div *ngIf="username.errors.required">Username is required</div>
                   <div *ngIf="username.errors.minlength">
@@ -76,10 +78,14 @@
                   </div>
                 </div>
               </div>
-              <button class="btn btn-primary btn-block">Add Patient</button>
-            </form>
+            </div>
           </div>
-        </div>
+          <div class="row">
+            <div class="col-4 align-self-center offset-md-4">
+              <button class="btn btn-primary btn-block">Add Patient</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

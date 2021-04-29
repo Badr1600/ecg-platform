@@ -124,7 +124,6 @@ export class patientUserInfoComponent implements OnInit {
     this.patientService.deleteAll()
       .subscribe(
         response => {
-          console.log(response);
           this.retrievePatient();
         },
         error => {

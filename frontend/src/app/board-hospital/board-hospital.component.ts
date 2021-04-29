@@ -7,17 +7,18 @@ import { HospitalsService } from 'src/app/_services/hospitals.service';
 import { RequestsService } from 'src/app/_services/requests.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenStorageService } from '../_services/token-storage.service';
-import { AuthService } from 'src/app/_services/auth.service';
+import { AuthService } from 'src/app/_services/auth.service';;
 
 @Component({
-  selector: 'app-board-admin',
-  templateUrl: './board-admin.component.html',
-  styleUrls: ['./board-admin.component.css']
+  selector: 'app-board-user',
+  templateUrl: './board-hospital.component.html',
+  styleUrls: ['./board-hospital.component.css']
 })
-export class BoardAdminComponent implements OnInit {
+export class BoardHospitalComponent implements OnInit {
   username: string;
   private roles: string[];
   isLoggedIn = false;
+  loggedIn = null;
   doctorRequests = [];
   completedDoctorRequests = [];
   patientRequests = [];
@@ -58,17 +59,18 @@ export class BoardAdminComponent implements OnInit {
     if (this.isLoggedIn) {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
-
-      if (!this.roles.includes('ROLE_ADMIN')) {
+      this.username = user.username;
+      if (!this.roles.includes('ROLE_HOSPITAL')) {
         this.router.navigate(['/home'])
           .then(() => {
             window.location.reload();
           });
       } else {
+        this.getLoggedIn();
         this.retrieveRequests();
       }
 
-      this.username = user.username;
+      
     } else {
       this.router.navigate(['/login'])
         .then(() => {
@@ -77,27 +79,36 @@ export class BoardAdminComponent implements OnInit {
     }
   }
 
+  getLoggedIn(): void {
+    this.hospitalService.getByUsername(this.username)
+      .subscribe(
+        data => {
+          this.loggedIn = data; 
+        });
+  }
+
   retrieveRequests(): void {
     this.requestService.getAll()
       .subscribe(
         data => {
           data.forEach(element => {
-            if ((element.status == "Pending") && (element.type == "patient")) {
-              this.patientRequests.push(element);
-            }
+            if (element.newHospital == this.loggedIn.id) {
+              if ((element.status == "Pending") && (element.type == "patient")) {
+                this.patientRequests.push(element);
+              }
+  
+              if (((element.status == "Accepted") && (element.type == "patient")) || ((element.status == "Denied") && (element.type == "patient"))) {
+                this.completedPatientRequests.push(element);
+              }
+  
+              if ((element.status == "Pending") && (element.type == "doctor")) {
+                this.doctorRequests.push(element);
 
-            if (((element.status == "Accepted") && (element.type == "patient")) || ((element.status == "Denied") && (element.type == "patient"))) {
-              this.completedPatientRequests.push(element);
-
-            }
-
-            if ((element.status == "Pending") && (element.type == "doctor")) {
-              this.doctorRequests.push(element);
-
-            }
-
-            if (((element.status == "Accepted") && (element.type == "doctor")) || ((element.status == "Denied") && (element.type == "doctor"))) {
-              this.completedDoctorRequests.push(element);
+              }
+  
+              if (((element.status == "Accepted") && (element.type == "doctor")) || ((element.status == "Denied") && (element.type == "doctor"))) {
+                this.completedDoctorRequests.push(element);
+              }
             }
 
             this.patientRequests.forEach(element => {
@@ -458,7 +469,7 @@ export class BoardAdminComponent implements OnInit {
   }
 
   refresh(): void {
-    this.router.navigate(['/admin'])
+    this.router.navigate(['/hospital'])
       .then(() => {
         window.location.reload();
       });
@@ -469,3 +480,4 @@ export class BoardAdminComponent implements OnInit {
   }
 
 }
+

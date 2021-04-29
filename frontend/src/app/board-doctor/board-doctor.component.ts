@@ -10,14 +10,15 @@ import { TokenStorageService } from '../_services/token-storage.service';
 import { AuthService } from 'src/app/_services/auth.service';
 
 @Component({
-  selector: 'app-board-admin',
-  templateUrl: './board-admin.component.html',
-  styleUrls: ['./board-admin.component.css']
+  selector: 'app-board-doctor',
+  templateUrl: './board-doctor.component.html',
+  styleUrls: ['./board-doctor.component.css']
 })
-export class BoardAdminComponent implements OnInit {
+export class BoardDoctorComponent implements OnInit {
   username: string;
   private roles: string[];
   isLoggedIn = false;
+  loggedIn = null;
   doctorRequests = [];
   completedDoctorRequests = [];
   patientRequests = [];
@@ -58,17 +59,17 @@ export class BoardAdminComponent implements OnInit {
     if (this.isLoggedIn) {
       const user = this.tokenStorageService.getUser();
       this.roles = user.roles;
+      this.username = user.username;
 
-      if (!this.roles.includes('ROLE_ADMIN')) {
+      if (!this.roles.includes('ROLE_DOCTOR')) {
         this.router.navigate(['/home'])
           .then(() => {
             window.location.reload();
           });
       } else {
+        this.getLoggedIn();
         this.retrieveRequests();
       }
-
-      this.username = user.username;
     } else {
       this.router.navigate(['/login'])
         .then(() => {
@@ -77,27 +78,27 @@ export class BoardAdminComponent implements OnInit {
     }
   }
 
+  getLoggedIn(): void {
+    this.doctorService.getByUsername(this.username)
+      .subscribe(
+        data => {
+          this.loggedIn = data; 
+        });
+  }
+
   retrieveRequests(): void {
     this.requestService.getAll()
       .subscribe(
         data => {
           data.forEach(element => {
-            if ((element.status == "Pending") && (element.type == "patient")) {
-              this.patientRequests.push(element);
-            }
-
-            if (((element.status == "Accepted") && (element.type == "patient")) || ((element.status == "Denied") && (element.type == "patient"))) {
-              this.completedPatientRequests.push(element);
-
-            }
-
-            if ((element.status == "Pending") && (element.type == "doctor")) {
-              this.doctorRequests.push(element);
-
-            }
-
-            if (((element.status == "Accepted") && (element.type == "doctor")) || ((element.status == "Denied") && (element.type == "doctor"))) {
-              this.completedDoctorRequests.push(element);
+            if (element.newDoctor == this.loggedIn.id) {
+              if ((element.status == "Pending") && (element.type == "patient")) {
+                this.patientRequests.push(element);
+              }
+  
+              if (((element.status == "Accepted") && (element.type == "patient")) || ((element.status == "Denied") && (element.type == "patient"))) {
+                this.completedPatientRequests.push(element);
+              }
             }
 
             this.patientRequests.forEach(element => {
@@ -108,16 +109,6 @@ export class BoardAdminComponent implements OnInit {
             this.completedPatientRequests.forEach(element => {
               this.getDoctor(element.newDoctor);
               this.getDoctor(element.currentDoctor);
-            });
-
-            this.doctorRequests.forEach(element => {
-              this.getHospital(element.newHospital);
-              this.getHospital(element.currentHospital);
-            });
-
-            this.completedDoctorRequests.forEach(element => {
-              this.getHospital(element.newHospital);
-              this.getHospital(element.currentHospital);
             });
           });
           this.dtTrigger.next();
@@ -163,37 +154,39 @@ export class BoardAdminComponent implements OnInit {
         });
   }
 
-  getHospital(id): void {
-    this.hospitalService.get(id)
-      .subscribe(
-        data => {
-          this.hospitals = data;
 
-          if (this.doctorRequests != null) {
-            for (var i = 0; i < this.doctorRequests.length; i++) {
-              if (this.doctorRequests[i].currentHospital == this.hospitals.id) {
-                this.doctorRequests[i].currentHospitalName = this.hospitals.title;
-              }
-              if ((this.doctorRequests[i].newHospital == this.hospitals.id) && (this.doctorRequests[i].newHospital != null)) {
-                this.doctorRequests[i].newHospitalName = this.hospitals.title;
-              }
-            }
-          }
-          if (this.completedDoctorRequests != null) {
-            for (var i = 0; i < this.completedDoctorRequests.length; i++) {
-              if (this.completedDoctorRequests[i].currentHospital == this.hospitals.id) {
-                this.completedDoctorRequests[i].currentHospitalName = this.hospitals.title;
-              }
-              if ((this.completedDoctorRequests[i].newHospital == this.hospitals.id) && (this.completedDoctorRequests[i].newHospital != null)) {
-                this.completedDoctorRequests[i].newHospitalName = this.hospitals.title;
-              }
-            }
-          }
-        },
-        error => {
-          console.log(error);
-        });
-  }
+  /*KEEP INCASE NEEDED FOR HOSPITAL USE*/
+  // getHospital(id): void {
+  //   this.hospitalService.get(id)
+  //     .subscribe(
+  //       data => {
+  //         this.hospitals = data;
+
+  //         if (this.doctorRequests != null) {
+  //           for (var i = 0; i < this.doctorRequests.length; i++) {
+  //             if (this.doctorRequests[i].currentHospital == this.hospitals.id) {
+  //               this.doctorRequests[i].currentHospitalName = this.hospitals.title;
+  //             }
+  //             if ((this.doctorRequests[i].newHospital == this.hospitals.id) && (this.doctorRequests[i].newHospital != null)) {
+  //               this.doctorRequests[i].newHospitalName = this.hospitals.title;
+  //             }
+  //           }
+  //         }
+  //         if (this.completedDoctorRequests != null) {
+  //           for (var i = 0; i < this.completedDoctorRequests.length; i++) {
+  //             if (this.completedDoctorRequests[i].currentHospital == this.hospitals.id) {
+  //               this.completedDoctorRequests[i].currentHospitalName = this.hospitals.title;
+  //             }
+  //             if ((this.completedDoctorRequests[i].newHospital == this.hospitals.id) && (this.completedDoctorRequests[i].newHospital != null)) {
+  //               this.completedDoctorRequests[i].newHospitalName = this.hospitals.title;
+  //             }
+  //           }
+  //         }
+  //       },
+  //       error => {
+  //         console.log(error);
+  //       });
+  // }
 
   acceptPatientRequest(patientRequest): void {
     const data = {
@@ -324,141 +317,8 @@ export class BoardAdminComponent implements OnInit {
         });
   }
 
-  acceptDoctorRequest(doctorRequest): void {
-    const data = {
-      status: "Accepted",
-      completedBy: this.username
-    }
-
-    this.requestService.update(doctorRequest.id, data)
-      .subscribe(data => { });
-
-
-    if (doctorRequest.patientType == "Transfer") {
-      this.hospitalService.get(doctorRequest.newHospital)
-        .subscribe(
-          response => {
-            this.newHospital = response;
-            this.doctorService.get(doctorRequest.doctorId)
-              .subscribe(
-                data => {
-                  this.currentDoctor = data;
-                  this.oldHospital = this.currentDoctor.hospital;
-
-                  if (this.newHospital != null) {
-                    this.currentDoctor.hospital = [];
-                    this.currentDoctor.hospital.push(this.newHospital.id);
-                    this.currentHospital = this.newHospital;
-                  }
-
-                  this.doctorService.update(this.currentDoctor.id, this.currentDoctor)
-                    .subscribe(
-                      response => {
-                        this.message = 'The doctor was updated successfully!';
-
-                        const setHospital = {
-                          hospital: this.newHospital
-                        }
-
-                        this.doctorService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
-                        });
-
-                        if (this.currentDoctor.patient.length != 0) {
-                          this.patientService.updateArray(this.currentDoctor.id, setHospital).subscribe(response => {
-                          });
-                        }
-
-                        if ((this.oldHospital != this.newHospital.id)) {
-                          const addDoctor = {
-                            doctor: this.currentDoctor.id,
-                            addDoctor: true
-                          }
-
-                          this.hospitalService.updateArrayDoctor(this.newHospital.id, addDoctor).subscribe(response => {
-                          });
-
-                          const removeDoctor = {
-                            doctor: this.currentDoctor.id,
-                            deleteDoctor: true
-                          }
-                          this.hospitalService.updateArrayDoctor(this.oldHospital, removeDoctor).subscribe(response => {
-                          });
-                        }
-
-                        if ((this.oldHospital != this.newHospital.id) && (this.newHospital.patients != this.currentDoctor.patient)) {
-                          const removePatients = {
-                            patient: this.currentDoctor.patient,
-                            deletePatient: true
-                          }
-
-                          this.hospitalService.updateArrayPatient(this.oldHospital, removePatients).subscribe(response => {
-                          });
-
-                          const addPatients = {
-                            patient: this.currentDoctor.patient,
-                            addPatient: true
-                          }
-
-                          this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
-                          });
-                        } else if (this.newHospital.patients.includes(this.currentDoctor.patient)) {
-                          const addPatients = {
-                            patient: this.currentDoctor.patient,
-                            addPatient: true
-                          }
-
-                          this.hospitalService.updateArrayPatient(this.newHospital.id, addPatients).subscribe(response => {
-                          });
-                        }
-
-                        this.refresh();
-                      },
-                      error => {
-                        console.log(error);
-                      });
-                });
-          });
-    }
-
-    if (doctorRequest.requestType == "Delete") {
-      this.doctorService.get(doctorRequest.doctorId)
-        .subscribe(
-          data => {
-            this.currentDoctor = data;
-            this.doctorService.delete(this.currentDoctor.id)
-              .subscribe(
-                response => {
-                },
-                error => {
-                  console.log(error);
-                });
-            this.authService.delete(this.currentDoctor.username)
-              .subscribe(
-                response => {
-                },
-                error => {
-                  console.log(error);
-                });
-            this.refresh();
-          });
-    }
-  }
-
-  denyDoctorRequest(doctorRequest): void {
-    const data = {
-      status: "Denied",
-      completedBy: this.username
-    }
-
-    this.requestService.update(doctorRequest.id, data)
-      .subscribe(
-        data => {
-          this.refresh();
-        });
-  }
-
   refresh(): void {
-    this.router.navigate(['/admin'])
+    this.router.navigate(['/doctor'])
       .then(() => {
         window.location.reload();
       });

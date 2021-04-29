@@ -115,7 +115,6 @@ export class HospitalViewComponent implements OnInit {
     this.doctorService.get(id)
       .subscribe(
         data => {
-          console.log(data);
           this.patientService.getAll()
           .subscribe(
             results => { 
@@ -154,7 +153,6 @@ export class HospitalViewComponent implements OnInit {
       .subscribe(
         data => {
           this.hospitals = data;
-          console.log(data);
         },
         error => {
           console.log(error);

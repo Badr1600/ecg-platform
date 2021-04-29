@@ -6,6 +6,7 @@ import { MedicalsService } from 'src/app/_services/medicals.service';
 import { RecordsService } from 'src/app/_services/records.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-patient-view',
@@ -31,6 +32,8 @@ export class PatientViewComponent implements OnInit {
   currentIndex = -1;
   title = '';
   fileToUpload: File = null;
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(
     private patientService: PatientsService,
@@ -55,6 +58,10 @@ export class PatientViewComponent implements OnInit {
           window.location.reload();
         });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 
   authorizeLogin(username): void {
@@ -85,14 +92,14 @@ export class PatientViewComponent implements OnInit {
         )
     } else if ((this.roles.includes('ROLE_PATIENT'))) {
       this.patientService.getByUsername(username)
-      .subscribe(
-        data => {
-          if (data.id == this.patient.id) {
-            this.message = '';
-            this.getPatient(this.patientId);
+        .subscribe(
+          data => {
+            if (data.id == this.patient.id) {
+              this.message = '';
+              this.getPatient(this.patientId);
+            }
           }
-        }
-      )
+        )
     }
   }
 
@@ -122,12 +129,16 @@ export class PatientViewComponent implements OnInit {
                   }
                   this.medicals = temp;
                 });
+                this.dtTrigger.next();
               }
             )
         },
         error => {
           console.log(error);
         });
+    this.dtOptions = {
+      pagingType: 'full_numbers'
+    };
   }
 
   fileUpload(files: FileList) {
@@ -191,7 +202,6 @@ export class PatientViewComponent implements OnInit {
   setActiveMedical(medical, index): void {
     this.currentMedical = medical;
     this.currentIndex = index;
-    this.router.navigate(['/medicalsView/' + this.currentMedical.id]);
   }
 
   refreshview(): void {

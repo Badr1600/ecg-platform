@@ -88,7 +88,7 @@ export class MedicalViewComponent implements OnInit {
     this.medicalId = this.route.snapshot.paramMap.get('id');
     this.retrieveMedical(this.medicalId);
     if ((this.roles.includes('ROLE_ADMIN'))) {
-      this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+      this.fetchCSV(this.medicalId);
       this.getMedical(this.medicalId);
       this.retrieveHospitals(this.medicalId);
     } else if ((this.roles.includes('ROLE_HOSPITAL'))) {
@@ -96,7 +96,7 @@ export class MedicalViewComponent implements OnInit {
         .subscribe(
           data => {
             if (data.patients.includes(this.medical.patient[0])) {
-              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.fetchCSV(this.medicalId);
               this.getMedical(this.medicalId);
               this.retrieveHospitals(this.medicalId);
             }
@@ -107,7 +107,7 @@ export class MedicalViewComponent implements OnInit {
         .subscribe(
           data => {
             if (data.patient.includes(this.medical.patient[0])) {
-              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.fetchCSV(this.medicalId);
               this.getMedical(this.medicalId);
               this.retrieveHospitals(this.medicalId);
             }
@@ -117,9 +117,8 @@ export class MedicalViewComponent implements OnInit {
       this.patientService.getByUsername(username)
         .subscribe(
           data => {
-            console.log(this.medical.id);
             if (data.medicals.includes(this.medical.id)) {
-              this.fetchCSV(this.route.snapshot.paramMap.get('id'));
+              this.fetchCSV(this.medicalId);
               this.getMedical(this.medicalId);
               this.retrieveHospitals(this.medicalId);
             }
@@ -243,7 +242,7 @@ export class MedicalViewComponent implements OnInit {
         data => {
           this.patient = data.patient[0];
           this.currentMedical = data;
-          this.recordsService.findCSV(this.patient)
+          this.recordsService.findCSV(this.medicalId)
             .subscribe(results => {
               var length = results[0].length;
               results.forEach(element => {
