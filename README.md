@@ -16,4 +16,7 @@
   - **nodemon server.js**
 - To start frontend: 
   - **ng serve --port 8081**
+<<<<<<< HEAD
 
+=======
+>>>>>>> a08cc23 (Medical records tables and theme edit)
