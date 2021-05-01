@@ -10,6 +10,8 @@
 - CSV files should contain only data points, no header, as many columns as needed.
 - Check **_services_** folder for all files and verify API urls.
 
+- **npm install** both backend and frontend should install all required packages. Check **_package.json_** files incase of difficulties.
+
 - To start beckend:
   - **nodemon server.js**
 - To start frontend: 
