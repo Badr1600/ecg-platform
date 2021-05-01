@@ -25,14 +25,14 @@ export class RecordsService {
     const contentType = file.type;
     const bucket = new S3(
       {
-        accessKeyId: 'AKIAJ3GUDXT7NH7PWKIQ',
-        secretAccessKey: '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',
+        accessKeyId: '', //FILL IN ACCESS KEY ID
+        secretAccessKey: '', //FILL IN SECRET ACCESS KEY ID
         region: 'us-east-2'
       }
     );
 
     const params = {
-      Bucket: 'medicalrecords26',
+      Bucket: '', //FILL IN BUCKET NAME
       Key: id + '/' + file.name,
       Body: file
     };

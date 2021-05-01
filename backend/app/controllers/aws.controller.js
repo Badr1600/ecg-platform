@@ -20,7 +20,7 @@ exports.findCSV = (req, res) => {
         });
 
         const params = {
-            Bucket: 'medicalrecords26',
+            Bucket: '', //FILL IN BUCKET NAME
         };
 
         const s3 = new aws.S3();
@@ -57,7 +57,7 @@ exports.findCSV = (req, res) => {
 
         async function getCSV(key) {
             const info = {
-                Bucket: 'medicalrecords26',
+                Bucket: '', //FILL IN BUCKET NAME
                 Key: key
             }
 
@@ -98,7 +98,7 @@ exports.create = (req, res) => {
     });
 
     const params = {
-        Bucket: 'medicalrecords26',
+        Bucket: '', //FILL IN BUCKET NAME
         Key: id,
         Body: ''
     };
@@ -123,7 +123,7 @@ exports.sendCSV = function(req, res) {
     });
 
     const params = {
-        Bucket: 'medicalrecords26',
+        Bucket: '', //FILL IN BUCKET NAME
         Key: req.query.patient + '/' + req.files[0].originalname, //Later add createdAt from file upload from mobile phone.
         Body: fs.createReadStream(req.files[0].path),
         ContentType: 'text/csv'

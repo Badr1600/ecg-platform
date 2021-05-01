@@ -7,6 +7,7 @@ import { RequestsService } from 'src/app/_services/requests.service';
 import { TokenStorageService } from '../../_services/token-storage.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'src/app/_services/auth.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-patient-details',
@@ -37,6 +38,8 @@ export class PatientDetailsComponent implements OnInit {
   currentIndexHospital = -1;
   currentIndexMedical = -1;
   title = '';
+  dtOptions: DataTables.Settings = {};
+  dtTrigger: Subject<any> = new Subject<any>();
 
   constructor(
     private hospitalService: HospitalsService,
@@ -62,6 +65,10 @@ export class PatientDetailsComponent implements OnInit {
           window.location.reload();
         });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe();
   }
 
   authorizeLogin(username): void {
@@ -136,12 +143,16 @@ export class PatientDetailsComponent implements OnInit {
                   }
                   this.medicals = temp;
                 });
+                this.dtTrigger.next();
               }
             )
         },
         error => {
           console.log(error);
         });
+    this.dtOptions = {
+      pagingType: 'full_numbers'
+    };
   }
 
   retrieveHospitals(): void {
@@ -229,7 +240,7 @@ export class PatientDetailsComponent implements OnInit {
     }
 
     this.patientService.update(this.currentPatient.id, data).subscribe();
-    
+
     this.message = 'Patient information updated sucessfully.';
   }
 
